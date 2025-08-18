@@ -48,6 +48,7 @@
         .task-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; gap: 10px; }
         .task-header h3 { margin: 0; font-size: 16px; line-height: 1.4; flex-grow: 1; }
         .task-tag { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; color: white; white-space: nowrap; }
+        .task-tag.entregue { background-color: var(--green); }
         .task-tag.rascunho { background-color: var(--grey); }
         .task-tag.pendente { background-color: var(--orange); }
         .task-tag.expirada { background-color: var(--red); }
@@ -55,15 +56,14 @@
         .task-tag.redacao { background-color: var(--primary-color); }
         .task-details { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; font-size: 14px; color: var(--text-light); margin-bottom: 20px; font-weight: 500; gap: 15px;}
         .task-details span { display: flex; align-items: center; gap: 5px; }
+        .task-note { font-size: 16px; font-weight: 700; color: var(--primary-color); }
         .task-button { width: 100%; padding: 12px; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; transition: background-color 0.3s; }
         .task-button.do { background-color: var(--green); color: white; }
         .task-button.doing { background-color: var(--grey); color: white; cursor: not-allowed; }
         .task-button.done { background-color: #e0e0e0; color: var(--text-light); cursor: not-allowed; }
-        
         .task-status { font-size: 12px; text-align: center; margin-top: 10px; min-height: 18px; font-weight: 500; }
         .task-status.success { color: var(--green); }
         .task-status.error { color: var(--red); }
-        
         .debug-section { margin-top: 15px; }
         .debug-section details { background-color: var(--card-background); border-radius: 10px; padding: 10px; border: 1px solid #eee;}
         .debug-section summary { font-weight: 600; cursor: pointer; padding: 5px;}
@@ -78,12 +78,8 @@
             <h1>Bem-vindo!</h1>
             <p>Faça login para continuar</p>
             <form id="loginForm">
-                <div class="input-group">
-                    <i data-feather="user"></i><input type="text" id="ra" placeholder="Seu RA (com dígito e UF)" required>
-                </div>
-                <div class="input-group">
-                    <i data-feather="lock"></i><input type="password" id="senha" placeholder="Sua Senha" required>
-                </div>
+                <div class="input-group"><i data-feather="user"></i><input type="text" id="ra" placeholder="Seu RA (com dígito e UF)" required></div>
+                <div class="input-group"><i data-feather="lock"></i><input type="password" id="senha" placeholder="Sua Senha" required></div>
                 <button type="submit" id="loginButton" class="login-btn">Entrar</button>
                 <div id="error-message"></div>
             </form>
@@ -121,20 +117,21 @@
                 <select id="room-filter"></select>
                 <select id="status-filter">
                     <option value="all">Todos os Tipos</option>
-                    <option value="pendente">Apenas Pendentes</option>
-                    <option value="rascunho">Apenas Rascunhos</option>
-                    <option value="expirada">Apenas Expiradas</option>
-                    <option value="prova">Apenas Provas</option>
-                    <option value="redacao">Apenas Redações</option>
+                    <option value="pendente">Pendentes</option>
+                    <option value="entregue">Entregues</option>
+                    <option value="rascunho">Rascunhos</option>
+                    <option value="expirada">Expiradas (Tarefas)</option>
+                    <option value="prova">Provas</option>
+                    <option value="redacao">Redações</option>
                 </select>
             </div>
             <div class="debug-section"><details><summary>Dados Brutos das Turmas (JSON)</summary><pre><code id="rooms-json-output"></code></pre></details></div>
             <div id="tasks-list"></div>
-            <div class="debug-section"><details><summary>Dados Brutos das Tarefas (JSON)</summary><pre><code id="tasks-json-output"></code></pre></details></div>
+            <div class="debug-section"><details><summary>Dados Brutos das Tarefas Atuais</summary><pre><code id="tasks-json-output"></code></pre></details></div>
         </section>
     </div>
 
-    <script>
+                    <script>
         feather.replace();
         
         const loginSection = document.getElementById('login-section'), appContainer = document.getElementById('app-container'),
@@ -145,24 +142,21 @@
               roomsJsonOutput = document.getElementById('rooms-json-output'), tasksJsonOutput = document.getElementById('tasks-json-output'),
               loginButton = document.getElementById('loginButton'), errorMessageDiv = document.getElementById('error-message');
 
-        let globalApiData = null, currentFilters = { room: 'all', status: 'all' };
+        let globalApiData = null, deliveredTasksCache = null, currentFilters = { room: 'all', status: 'all' };
         
-        function formatDate(d) { return d ? new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : 'N/A'; }
-        function calculateDuration(s, e) {
-            if (!s || !e) return '-';
-            const diffDays = Math.ceil(Math.abs(new Date(e) - new Date(s)) / (1000 * 60 * 60 * 24));
-            return diffDays <= 1 ? '1 dia' : `${diffDays} dias`;
-        }
-
         function getTaskType(task) {
             const statusInfo = { type: 'tarefa', status: 'pendente', tagClass: 'pendente', tagText: 'Pendente' };
-            if (task.is_exam) statusInfo.type = 'prova';
-            else if (task.is_essay) statusInfo.type = 'redacao';
-            if (task.answer_status === 'draft') statusInfo.status = 'rascunho';
-            else if (task.task_expired) statusInfo.status = 'expirada';
+            const effectiveTask = task.task || task; // A tarefa entregue vem dentro de um objeto 'task'
+            if(task.status === 'finished' || task.status === 'submitted') statusInfo.status = 'entregue';
+            else if (task.answer_status === 'draft') statusInfo.status = 'rascunho';
+            else if (effectiveTask.task_expired) statusInfo.status = 'expirada';
+            
+            if (effectiveTask.is_exam) statusInfo.type = 'prova';
+            else if (effectiveTask.is_essay) statusInfo.type = 'redacao';
+            
             statusInfo.tagClass = statusInfo.status !== 'pendente' ? statusInfo.status : statusInfo.type;
             const typeName = statusInfo.type.charAt(0).toUpperCase() + statusInfo.type.slice(1);
-            statusInfo.tagText = statusInfo.status === 'rascunho' ? `${typeName} (Rascunho)` : typeName;
+            statusInfo.tagText = typeName + (statusInfo.status === 'rascunho' ? ' (Rascunho)' : '');
             return statusInfo;
         }
         
@@ -173,41 +167,68 @@
             }
         }
         
-        function renderTasks() {
+        async function renderTasks() {
             if (!globalApiData) return;
-            tasksList.innerHTML = '';
+            tasksList.innerHTML = '<p style="text-align: center; color: var(--text-light);">Carregando...</p>';
+            let tasksToDisplay = [];
+            try {
+                if (currentFilters.status === 'entregue') {
+                    if (!deliveredTasksCache) {
+                        const targets = globalApiData.roomUserData.rooms.map(r => r.name);
+                        const response = await fetch('/api/get-delivered-tasks', {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                tokenB: globalApiData.tokenB, nick: globalApiData.userInfo.NM_NICK, publicationTargets: targets
+                            })
+                        });
+                        const data = await response.json();
+                        if (!response.ok) throw new Error(data.error || "Falha na API de tarefas entregues");
+                        deliveredTasksCache = data;
+                    }
+                    tasksToDisplay = deliveredTasksCache.map(answer => ({ ...answer.task, ...answer }));
+                } else {
+                    tasksToDisplay = globalApiData.tarefas;
+                }
 
-            const filteredTasks = globalApiData.tarefas.filter(task => {
-                const typeInfo = getTaskType(task);
-                const roomMatch = currentFilters.room === 'all' || task.publication_target === currentFilters.room;
-                const statusMatch = currentFilters.status === 'all' 
-                    || (currentFilters.status === 'pendente' && typeInfo.status === 'pendente')
-                    || (currentFilters.status === 'rascunho' && typeInfo.status === 'rascunho')
-                    || (currentFilters.status === 'expirada' && typeInfo.status === 'expirada' && typeInfo.type === 'tarefa')
-                    || (currentFilters.status === 'prova' && typeInfo.type === 'prova')
-                    || (currentFilters.status === 'redacao' && typeInfo.type === 'redacao');
-                return roomMatch && statusMatch;
-            });
+                tasksJsonOutput.textContent = JSON.stringify(tasksToDisplay, null, 2);
+                tasksList.innerHTML = '';
 
-            if(filteredTasks.length === 0) {
-                tasksList.innerHTML = '<p style="text-align: center; color: var(--text-light);">Nenhuma atividade encontrada.</p>';
-                return;
+                const filteredTasks = tasksToDisplay.filter(task => {
+                    const typeInfo = getTaskType(task);
+                    const effectiveTask = task.task || task;
+                    const roomMatch = currentFilters.room === 'all' || effectiveTask.publication_target === currentFilters.room;
+                    const statusMatch = currentFilters.status === 'all' || typeInfo.status === currentFilters.status || (currentFilters.status !== 'entregue' && typeInfo.type === currentFilters.status);
+                    return roomMatch && statusMatch;
+                });
+
+                if(filteredTasks.length === 0) {
+                    tasksList.innerHTML = '<p style="text-align: center; color: var(--text-light);">Nenhuma atividade encontrada.</p>';
+                    return;
+                }
+
+                filteredTasks.forEach(task => {
+                    const typeInfo = getTaskType(task);
+                    const effectiveTask = task.task || task;
+                    let bottomContent = '';
+                    if(typeInfo.status === 'entregue') {
+                        bottomContent = `<div class="task-note">Nota: ${task.result_score !== null ? task.result_score : 'Aguardando correção'}</div>`;
+                    } else {
+                        bottomContent = `<button class="task-button do" data-task-id="${effectiveTask.id}" data-room-id="${effectiveTask.publication_target}">Fazer Atividade</button>
+                                         <div class="task-status"></div>`;
+                    }
+                    const cardHTML = `<div class="task-card">
+                        <div class="task-header"><h3>${effectiveTask.title}</h3><span class="task-tag ${typeInfo.tagClass}">${typeInfo.tagText}</span></div>
+                        <div class="task-details">
+                            <span><i data-feather="calendar"></i> Entrega: ${formatDate(effectiveTask.expire_at)}</span>
+                        </div>
+                        ${bottomContent}
+                    </div>`;
+                    tasksList.insertAdjacentHTML('beforeend', cardHTML);
+                });
+                feather.replace();
+            } catch (error) {
+                tasksList.innerHTML = `<p style="text-align: center; color: var(--red);">Erro: ${error.message}</p>`;
             }
-
-            filteredTasks.forEach(task => {
-                const typeInfo = getTaskType(task);
-                const cardHTML = `<div class="task-card">
-                    <div class="task-header"><h3>${task.title}</h3><span class="task-tag ${typeInfo.tagClass}">${typeInfo.tagText}</span></div>
-                    <div class="task-details">
-                        <span><i data-feather="clock"></i> Duração: ${calculateDuration(task.publish_at, task.expire_at)}</span>
-                        <span><i data-feather="calendar"></i> Entrega: ${formatDate(task.expire_at)}</span>
-                    </div>
-                    <button class="task-button do" data-task-id="${task.id}" data-room-id="${task.publication_target}">Fazer Atividade</button>
-                    <div class="task-status"></div>
-                </div>`;
-                tasksList.insertAdjacentHTML('beforeend', cardHTML);
-            });
-            feather.replace();
         }
 
         async function doTask(button) {
@@ -217,23 +238,19 @@
             try {
                 button.disabled = true; button.className = 'task-button doing'; button.textContent = 'Buscando Respostas...';
                 statusDiv.className = 'task-status'; statusDiv.textContent = 'Aguarde...';
-
                 const answersResponse = await fetch('/api/get-answers', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ taskId: taskId, tokenB: globalApiData.tokenB, room: roomId })
                 });
                 const answersData = await answersResponse.json();
                 if (!answersResponse.ok) throw new Error(answersData.error || 'Falha ao buscar respostas.');
-
                 button.textContent = 'Enviando Tarefa...'; statusDiv.textContent = 'Respostas encontradas! Enviando...';
-
                 const submitResponse = await fetch('/api/submit-task', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ taskId: taskId, tokenB: globalApiData.tokenB, payload: answersData })
                 });
                 const submitData = await submitResponse.json();
                 if (!submitResponse.ok) throw new Error(submitData.error || 'Falha ao enviar a tarefa.');
-
                 button.className = 'task-button done'; button.textContent = 'Feito!';
                 statusDiv.className = 'task-status success'; statusDiv.textContent = 'Tarefa concluída com sucesso!';
             } catch (error) {
@@ -287,5 +304,4 @@
         });
     </script>
 </body>
-                                                                                                            </html>
-    
+</html>
