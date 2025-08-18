@@ -15,6 +15,7 @@
         }
         body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--background-color); color: var(--text-color); }
         button, select { cursor: pointer; font-family: 'Poppins', sans-serif; }
+        
         #login-section { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         .login-card { background: var(--card-background); padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
         .login-card .header-icon { background-color: #ede7f6; color: var(--primary-color); width: 60px; height: 60px; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; margin-bottom: 15px; }
@@ -24,7 +25,8 @@
         .login-btn { width: 100%; padding: 15px; background: var(--button-gradient); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; }
         .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
         #error-message { color: var(--red); margin-top: 15px; font-weight: 600; min-height: 20px;}
-        #dashboard-section { padding: 20px; }
+
+        #dashboard-section, #tasks-section { padding: 20px; }
         .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .user-profile { display: flex; align-items: center; }
         .user-profile .avatar { width: 40px; height: 40px; border-radius: 12px; background-color: var(--primary-color); color: white; display: flex; justify-content: center; align-items: center; font-weight: 600; margin-left: 10px; }
@@ -34,7 +36,7 @@
         .card-pendencias { cursor: pointer; }
         .card h3 { margin: 0; font-size: 16px; color: var(--text-light); font-weight: 400;}
         .card p { margin: 5px 0 0; font-size: 32px; font-weight: 700; }
-        #tasks-section { padding: 20px; display: none; }
+
         .tasks-header { display: flex; align-items: center; margin-bottom: 20px; }
         .tasks-header .back-btn { background: none; border: none; margin-right: 15px; }
         .tasks-header h1 { font-size: 22px; margin: 0; }
@@ -53,11 +55,19 @@
         .task-tag.redacao { background-color: var(--primary-color); }
         .task-details { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; font-size: 14px; color: var(--text-light); margin-bottom: 20px; font-weight: 500; gap: 15px;}
         .task-details span { display: flex; align-items: center; gap: 5px; }
-        .task-button { width: 100%; padding: 12px; background-color: var(--green); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; }
+        .task-button { width: 100%; padding: 12px; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; transition: background-color 0.3s; }
+        .task-button.do { background-color: var(--green); color: white; }
+        .task-button.doing { background-color: var(--grey); color: white; cursor: not-allowed; }
+        .task-button.done { background-color: #e0e0e0; color: var(--text-light); cursor: not-allowed; }
+        
+        .task-status { font-size: 12px; text-align: center; margin-top: 10px; min-height: 18px; font-weight: 500; }
+        .task-status.success { color: var(--green); }
+        .task-status.error { color: var(--red); }
+        
         .debug-section { margin-top: 15px; }
         .debug-section details { background-color: var(--card-background); border-radius: 10px; padding: 10px; border: 1px solid #eee;}
         .debug-section summary { font-weight: 600; cursor: pointer; padding: 5px;}
-        .debug-section pre { background-color: #2d2d2d; color: #f1f1f1; padding: 15px; border-radius: 8px; white-space: pre-wrap; word-wrap: break-word; font-size: 12px; max-height: 250px; overflow-y: auto; }
+        .debug-section pre { background-color: #2d2d2d; color: #f1f1f1; padding: 15px; border-radius: 8px; font-size: 12px; max-height: 250px; overflow-y: auto; white-space: pre-wrap; word-wrap: break-word; }
     </style>
 </head>
 <body>
@@ -68,8 +78,12 @@
             <h1>Bem-vindo!</h1>
             <p>Faça login para continuar</p>
             <form id="loginForm">
-                <div class="input-group"><i data-feather="user"></i><input type="text" id="ra" placeholder="Seu RA (com dígito e UF)" required></div>
-                <div class="input-group"><i data-feather="lock"></i><input type="password" id="senha" placeholder="Sua Senha" required></div>
+                <div class="input-group">
+                    <i data-feather="user"></i><input type="text" id="ra" placeholder="Seu RA (com dígito e UF)" required>
+                </div>
+                <div class="input-group">
+                    <i data-feather="lock"></i><input type="password" id="senha" placeholder="Sua Senha" required>
+                </div>
                 <button type="submit" id="loginButton" class="login-btn">Entrar</button>
                 <div id="error-message"></div>
             </form>
@@ -122,6 +136,7 @@
 
     <script>
         feather.replace();
+        
         const loginSection = document.getElementById('login-section'), appContainer = document.getElementById('app-container'),
               dashboardSection = document.getElementById('dashboard-section'), tasksSection = document.getElementById('tasks-section'),
               loginForm = document.getElementById('loginForm'), pendenciasCard = document.getElementById('pendencias-card'),
@@ -151,18 +166,10 @@
             return statusInfo;
         }
         
-        /** FUNÇÃO APRIMORADA PARA POPULAR O FILTRO DE TURMAS */
         function populateFilters(roomsData) {
             roomFilter.innerHTML = '<option value="all">Todas as Turmas</option>';
             if (roomsData && Array.isArray(roomsData.rooms)) {
-                roomsData.rooms.forEach(room => {
-                    // O `publication_target` de uma tarefa é o `name` da sala.
-                    // O `topic` é o nome legível que vamos mostrar.
-                    const roomName = room.topic || room.name; // Usa o 'topic' como nome, se não tiver, usa o 'name'
-                    const roomId = room.name; // O ID para filtrar é o campo 'name' da sala.
-                    const option = new Option(roomName, roomId);
-                    roomFilter.add(option);
-                });
+                roomsData.rooms.forEach(room => roomFilter.add(new Option(room.topic || room.name, room.name)));
             }
         }
         
@@ -172,15 +179,13 @@
 
             const filteredTasks = globalApiData.tarefas.filter(task => {
                 const typeInfo = getTaskType(task);
-                // O `publication_target` da TAREFA corresponde ao `name` da SALA.
                 const roomMatch = currentFilters.room === 'all' || task.publication_target === currentFilters.room;
                 const statusMatch = currentFilters.status === 'all' 
                     || (currentFilters.status === 'pendente' && typeInfo.status === 'pendente')
                     || (currentFilters.status === 'rascunho' && typeInfo.status === 'rascunho')
-                    || (currentFilters.status === 'expirada' && typeInfo.status === 'expirada' && typeInfo.type === 'tarefa') // Apenas TAREFAS expiradas
+                    || (currentFilters.status === 'expirada' && typeInfo.status === 'expirada' && typeInfo.type === 'tarefa')
                     || (currentFilters.status === 'prova' && typeInfo.type === 'prova')
                     || (currentFilters.status === 'redacao' && typeInfo.type === 'redacao');
-
                 return roomMatch && statusMatch;
             });
 
@@ -197,11 +202,44 @@
                         <span><i data-feather="clock"></i> Duração: ${calculateDuration(task.publish_at, task.expire_at)}</span>
                         <span><i data-feather="calendar"></i> Entrega: ${formatDate(task.expire_at)}</span>
                     </div>
-                    <button class="task-button">${typeInfo.status === 'expirada' ? 'Ver Detalhes' : 'Continuar Atividade'}</button>
+                    <button class="task-button do" data-task-id="${task.id}" data-room-id="${task.publication_target}">Fazer Atividade</button>
+                    <div class="task-status"></div>
                 </div>`;
                 tasksList.insertAdjacentHTML('beforeend', cardHTML);
             });
             feather.replace();
+        }
+
+        async function doTask(button) {
+            const card = button.closest('.task-card');
+            const statusDiv = card.querySelector('.task-status');
+            const { taskId, roomId } = button.dataset;
+            try {
+                button.disabled = true; button.className = 'task-button doing'; button.textContent = 'Buscando Respostas...';
+                statusDiv.className = 'task-status'; statusDiv.textContent = 'Aguarde...';
+
+                const answersResponse = await fetch('/api/get-answers', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ taskId: taskId, tokenB: globalApiData.tokenB, room: roomId })
+                });
+                const answersData = await answersResponse.json();
+                if (!answersResponse.ok) throw new Error(answersData.error || 'Falha ao buscar respostas.');
+
+                button.textContent = 'Enviando Tarefa...'; statusDiv.textContent = 'Respostas encontradas! Enviando...';
+
+                const submitResponse = await fetch('/api/submit-task', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ taskId: taskId, tokenB: globalApiData.tokenB, payload: answersData })
+                });
+                const submitData = await submitResponse.json();
+                if (!submitResponse.ok) throw new Error(submitData.error || 'Falha ao enviar a tarefa.');
+
+                button.className = 'task-button done'; button.textContent = 'Feito!';
+                statusDiv.className = 'task-status success'; statusDiv.textContent = 'Tarefa concluída com sucesso!';
+            } catch (error) {
+                button.disabled = false; button.className = 'task-button do'; button.textContent = 'Tentar Novamente';
+                statusDiv.className = 'task-status error'; statusDiv.textContent = `Erro: ${error.message}`;
+            }
         }
 
         function showDashboard() { dashboardSection.style.display = 'block'; tasksSection.style.display = 'none'; }
@@ -224,7 +262,7 @@
                 const { userInfo, faltas, tarefas } = data;
                 document.getElementById('user-name').textContent = userInfo.NAME.split(' ')[0];
                 document.getElementById('user-avatar').textContent = userInfo.NAME.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-                document.getElementById('pendencias-count').textContent = tarefas.filter(t => getTaskType(t).status === 'pendente' || getTaskType(t).status === 'rascunho').length;
+                document.getElementById('pendencias-count').textContent = tarefas.filter(t => ['pendente', 'rascunho'].includes(getTaskType(t).status)).length;
                 document.getElementById('faltas-count').textContent = faltas.length > 0 ? faltas[0].totalFaltasBimestre : 0;
 
                 loginSection.style.display = 'none'; appContainer.style.display = 'block'; showDashboard();
@@ -242,6 +280,12 @@
         backToDashboardBtn.addEventListener('click', showDashboard);
         roomFilter.addEventListener('change', (e) => { currentFilters.room = e.target.value; renderTasks(); });
         statusFilter.addEventListener('change', (e) => { currentFilters.status = e.target.value; renderTasks(); });
+        tasksList.addEventListener('click', function(event) {
+            if (event.target && event.target.matches('.task-button.do')) {
+                doTask(event.target);
+            }
+        });
     </script>
 </body>
-</html>
+                                                                                                            </html>
+    
