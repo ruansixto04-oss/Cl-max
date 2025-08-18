@@ -7,186 +7,67 @@
     <script src="https://unpkg.com/feather-icons"></script>
     
     <style>
-        /* Importa a fonte do Google Fonts */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-
-        /* Variáveis de Cores e Estilos Gerais */
         :root {
-            --primary-color: #673ab7; /* Roxo do design */
-            --background-color: #f0f2f5;
-            --card-background: #ffffff;
-            --text-color: #333;
-            --text-light: #888;
-            --orange: #ff9800;
-            --yellow: #ffc107;
-            --button-gradient: linear-gradient(90deg, #8e2de2, #4a00e0);
+            --primary-color: #673ab7; --background-color: #f0f2f5; --card-background: #ffffff;
+            --text-color: #333; --text-light: #888; --orange: #ff9800; --yellow: #ffc107;
+            --button-gradient: linear-gradient(90deg, #8e2de2, #4a00e0); --green: #4CAF50;
         }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            background-color: var(--background-color);
-            color: var(--text-color);
-        }
-
+        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--background-color); color: var(--text-color); }
+        button { cursor: pointer; }
+        
         /* ----- TELA DE LOGIN ----- */
-        #login-section {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .login-card {
-            background: var(--card-background);
-            padding: 40px 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-        .login-card .header-icon {
-            background-color: #ede7f6;
-            color: var(--primary-color);
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .login-card h1 {
-            margin: 0 0 10px 0;
-            font-size: 24px;
-        }
-        .login-card p {
-            color: var(--text-light);
-            margin-bottom: 30px;
-        }
-        .input-group {
-            position: relative;
-            margin-bottom: 20px;
-        }
-        .input-group i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-light);
-        }
-        .input-group input {
-            width: 100%;
-            padding: 15px 15px 15px 50px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            box-sizing: border-box; /* Garante que o padding não aumente a largura */
-            font-size: 16px;
-        }
-        .login-btn {
-            width: 100%;
-            padding: 15px;
-            background: var(--button-gradient);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: opacity 0.3s;
-        }
-        .login-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        #error-message {
-            color: #f44336;
-            margin-top: 15px;
-            font-weight: 600;
-        }
-
+        #login-section { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .login-card { background: var(--card-background); padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); width: 100%; max-width: 400px; text-align: center; }
+        .login-card .header-icon { background-color: #ede7f6; color: var(--primary-color); width: 60px; height: 60px; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; margin-bottom: 15px; }
+        .login-card h1 { margin: 0 0 10px 0; font-size: 24px; }
+        .login-card p { color: var(--text-light); margin-bottom: 30px; }
+        .input-group { position: relative; margin-bottom: 20px; }
+        .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-light); }
+        .input-group input { width: 100%; padding: 15px 15px 15px 50px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
+        .login-btn { width: 100%; padding: 15px; background: var(--button-gradient); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; transition: opacity 0.3s; }
+        .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        #error-message { color: #f44336; margin-top: 15px; font-weight: 600; }
+        
         /* ----- DASHBOARD ----- */
-        #dashboard-section {
-            padding: 20px;
-            display: none; /* Começa escondida */
-        }
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-        .menu-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-        .user-profile {
-            display: flex;
-            align-items: center;
-        }
-        .user-profile .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            background-color: var(--primary-color);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: 600;
-            margin-left: 10px;
-        }
-        .summary-cards {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        .card {
-            background: var(--card-background);
-            border-radius: 15px;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
+        #dashboard-section { padding: 20px; display: block; } /* Mudança: começa visível */
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .menu-btn { background: none; border: none; }
+        .user-profile { display: flex; align-items: center; }
+        .user-profile .avatar { width: 40px; height: 40px; border-radius: 12px; background-color: var(--primary-color); color: white; display: flex; justify-content: center; align-items: center; font-weight: 600; margin-left: 10px; }
+        .summary-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+        .card { background: var(--card-background); border-radius: 15px; padding: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .card:hover { transform: scale(1.03); transition: transform 0.2s; }
         .card h3 { margin: 0; font-size: 16px; color: var(--text-light); font-weight: 400;}
         .card p { margin: 5px 0 0; font-size: 32px; font-weight: 700; }
         .card-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; justify-content: center; align-items: center; }
+        .card-pendencias { cursor: pointer; } /* Adicionado para indicar que é clicável */
         .card-pendencias .card-icon { background-color: #ffeadd; color: var(--orange); }
         .card-pendencias p { color: var(--orange); }
         .card-faltas .card-icon { background-color: #fff0c7; color: var(--yellow); }
         .card-faltas p { color: var(--yellow); }
         .platforms h2 { font-size: 18px; margin-bottom: 15px; color: var(--text-light); font-weight: 600; }
-        .platform-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: var(--card-background);
-            padding: 15px 20px;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            text-decoration: none;
-            color: var(--text-color);
-            font-weight: 600;
-            transition: transform 0.2s;
-        }
-        .platform-item:hover { transform: scale(1.02); }
+        .platform-item { display: flex; justify-content: space-between; align-items: center; background-color: var(--card-background); padding: 15px 20px; border-radius: 12px; margin-bottom: 10px; text-decoration: none; color: var(--text-color); font-weight: 600; }
         .notification-badge { background-color: #f44336; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; justify-content: center; align-items: center; font-size: 12px; }
-        .beta-tag { background-color: #e0e0e0; color: var(--text-light); font-size: 10px; padding: 3px 8px; border-radius: 8px; font-weight: bold; }
+
+        /* ----- NOVA TELA DE TAREFAS ----- */
+        #tasks-section { padding: 20px; display: none; } /* Começa escondida */
+        .tasks-header { display: flex; align-items: center; margin-bottom: 20px; }
+        .tasks-header .back-btn { background: none; border: none; margin-right: 15px; }
+        .tasks-header h1 { font-size: 22px; margin: 0; }
+        #tasks-list { display: flex; flex-direction: column; gap: 15px; }
+        .task-card { background: var(--card-background); border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .task-card h3 { margin: 0 0 15px 0; font-size: 18px; }
+        .task-details { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: var(--text-light); margin-bottom: 20px; }
+        .task-details span { display: flex; align-items: center; gap: 5px; }
+        .task-button { width: 100%; padding: 12px; background-color: var(--green); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; }
     </style>
 </head>
 <body>
 
     <section id="login-section">
         <div class="login-card">
-            <div class="header-icon">
-                <i data-feather="book-open"></i>
-            </div>
+            <div class="header-icon"><i data-feather="book-open"></i></div>
             <h1>Bem-vindo!</h1>
             <p>Faça login para continuar</p>
             <form id="loginForm">
@@ -204,133 +85,175 @@
         </div>
     </section>
 
-    <section id="dashboard-section">
-        <header class="dashboard-header">
-            <button class="menu-btn"><i data-feather="menu"></i></button>
-            <div class="user-profile">
-                <span>Olá, <strong id="user-name">...</strong></span>
-                <div class="avatar" id="user-avatar">--</div>
-            </div>
-        </header>
-
-        <main>
-            <section class="summary-cards">
-                <div class="card card-pendencias">
-                    <div class="card-content">
-                        <h3>Pendências</h3>
-                        <p id="pendencias-count">0</p>
-                    </div>
-                    <div class="card-icon"><i data-feather="calendar"></i></div>
+    <div id="app-container" style="display: none;"> <section id="dashboard-section">
+            <header class="dashboard-header">
+                <button class="menu-btn"><i data-feather="menu"></i></button>
+                <div class="user-profile">
+                    <span>Olá, <strong id="user-name">...</strong></span>
+                    <div class="avatar" id="user-avatar">--</div>
                 </div>
-                <div class="card card-faltas">
-                    <div class="card-content">
-                        <h3>Faltas</h3>
-                        <p id="faltas-count">0</p>
+            </header>
+            <main>
+                <section class="summary-cards">
+                    <div class="card card-pendencias" id="pendencias-card">
+                        <div class="card-content">
+                            <h3>Pendências</h3>
+                            <p id="pendencias-count">0</p>
+                        </div>
+                        <div class="card-icon"><i data-feather="calendar"></i></div>
                     </div>
-                    <div class="card-icon"><i data-feather="user-x"></i></div>
-                </div>
-            </section>
+                    <div class="card card-faltas">
+                        <div class="card-content">
+                            <h3>Faltas</h3>
+                            <p id="faltas-count">0</p>
+                        </div>
+                        <div class="card-icon"><i data-feather="user-x"></i></div>
+                    </div>
+                </section>
+                <section class="platforms">
+                    <h2>Plataformas</h2>
+                    <a href="#" class="platform-item">
+                        <span>Tarefa SP</span>
+                        <span class="notification-badge" id="tarefa-sp-badge">0</span>
+                    </a>
+                </section>
+            </main>
+        </section>
 
-            <section class="platforms">
-                <h2>Plataformas</h2>
-                <a href="#" class="platform-item">
-                    <span>Apostilas</span><i data-feather="chevron-right"></i>
-                </a>
-                <a href="#" class="platform-item">
-                    <span>Tarefa SP</span>
-                    <span class="notification-badge" id="tarefa-sp-badge">0</span>
-                </a>
-                <a href="#" class="platform-item">
-                    <span>Redação Paulista</span><i data-feather="chevron-right"></i>
-                </a>
-                <a href="#" class="platform-item">
-                    <span>Provas</span>
-                    <span class="beta-tag">BETA</span>
-                </a>
-            </section>
-        </main>
-    </section>
+        <section id="tasks-section">
+            <header class="tasks-header">
+                <button class="back-btn" id="back-to-dashboard-btn"><i data-feather="arrow-left"></i></button>
+                <h1>Minhas Pendências</h1>
+            </header>
+            <div id="tasks-list">
+                </div>
+        </section>
+    </div>
 
     <script>
-        // Ativa os ícones do Feather
         feather.replace();
-
-        // Elementos da Página
+        
+        // Elementos das seções
         const loginSection = document.getElementById('login-section');
+        const appContainer = document.getElementById('app-container');
         const dashboardSection = document.getElementById('dashboard-section');
+        const tasksSection = document.getElementById('tasks-section');
+        
+        // Elementos interativos
         const loginForm = document.getElementById('loginForm');
         const loginButton = document.getElementById('loginButton');
         const errorMessageDiv = document.getElementById('error-message');
+        const pendenciasCard = document.getElementById('pendencias-card');
+        const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
+        
+        let globalApiData = null; // Para guardar os dados da API
 
-        // Função para mostrar a Dashboard e esconder o Login
-        function showDashboard(data) {
-            // Preenche os dados na dashboard
-            const { userInfo, faltas, tarefas } = data;
-            
-            // 1. Nome e Avatar
-            if (userInfo && userInfo.NAME) {
-                const primeiroNome = userInfo.NAME.split(' ')[0];
-                document.getElementById('user-name').textContent = primeiroNome;
-                const iniciais = userInfo.NAME.split(' ').map(n => n[0]).join('');
-                document.getElementById('user-avatar').textContent = iniciais.substring(0, 2).toUpperCase();
-            }
-
-            // 2. Pendências
-            if (tarefas) {
-                document.getElementById('pendencias-count').textContent = tarefas.length;
-                document.getElementById('tarefa-sp-badge').textContent = tarefas.length;
-            }
-
-            // 3. Faltas
-            if (faltas && faltas.length > 0) {
-                document.getElementById('faltas-count').textContent = faltas[0].totalFaltasBimestre;
-            }
-
-            // Esconde o login e mostra a dashboard
-            loginSection.style.display = 'none';
-            dashboardSection.style.display = 'block';
+        // --- FUNÇÕES AUXILIARES ---
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
         }
 
+        function calculateDuration(start, end) {
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+            const diffTime = Math.abs(endDate - startDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays === 1 ? '1 dia' : `${diffDays} dias`;
+        }
 
-        // Event Listener para o formulário de login
+        // --- FUNÇÕES DE RENDERIZAÇÃO ---
+        function renderDashboard(data) {
+            const { userInfo, faltas, tarefas } = data;
+            
+            // Nome e Avatar
+            const primeiroNome = userInfo.NAME.split(' ')[0];
+            document.getElementById('user-name').textContent = primeiroNome;
+            const iniciais = userInfo.NAME.split(' ').map(n => n[0]).join('');
+            document.getElementById('user-avatar').textContent = iniciais.substring(0, 2).toUpperCase();
+
+            // Pendências e Faltas
+            document.getElementById('pendencias-count').textContent = tarefas.length;
+            document.getElementById('tarefa-sp-badge').textContent = tarefas.length;
+            document.getElementById('faltas-count').textContent = faltas[0].totalFaltasBimestre;
+
+            // Mostra o app e esconde o login
+            loginSection.style.display = 'none';
+            appContainer.style.display = 'block';
+            dashboardSection.style.display = 'block';
+            tasksSection.style.display = 'none';
+        }
+
+        function renderTasks(tasks) {
+            const tasksList = document.getElementById('tasks-list');
+            tasksList.innerHTML = ''; // Limpa a lista antes de adicionar
+
+            if(tasks.length === 0) {
+                tasksList.innerHTML = '<p>Você não tem nenhuma pendência. Parabéns!</p>';
+                return;
+            }
+
+            tasks.forEach(task => {
+                const taskCardHTML = `
+                    <div class="task-card">
+                        <h3>${task.title}</h3>
+                        <div class="task-details">
+                            <span><i data-feather="clock"></i> Duração: ${calculateDuration(task.start_date, task.end_date)}</span>
+                            <span><i data-feather="calendar"></i> Entrega: ${formatDate(task.end_date)}</span>
+                        </div>
+                        <button class="task-button">Fazer Atividade</button>
+                    </div>
+                `;
+                tasksList.insertAdjacentHTML('beforeend', taskCardHTML);
+            });
+            
+            feather.replace(); // Reativa os ícones dentro dos cards criados
+            
+            // Mostra a tela de tarefas e esconde a dashboard
+            dashboardSection.style.display = 'none';
+            tasksSection.style.display = 'block';
+        }
+
+        // --- EVENT LISTENERS ---
         loginForm.addEventListener('submit', async function(event) {
-            event.preventDefault(); // Impede o recarregamento da página
-
+            event.preventDefault();
             const ra = document.getElementById('ra').value;
             const senha = document.getElementById('senha').value;
             
-            // Desabilita o botão e limpa erros
             loginButton.disabled = true;
             loginButton.textContent = 'Carregando...';
             errorMessageDiv.textContent = '';
 
             try {
-                // Chama a nossa API serverless que está em /api/login.js
                 const response = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ user: ra, senha: senha }),
                 });
-
                 const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.error || 'Falha ao fazer login. Verifique seus dados.');
-                }
+                if (!response.ok) throw new Error(data.error);
                 
-                // Se o login for bem-sucedido, mostra a dashboard
-                showDashboard(data);
+                globalApiData = data; // Salva os dados globalmente
+                renderDashboard(data); // Renderiza a dashboard inicial
 
             } catch (error) {
                 errorMessageDiv.textContent = `Erro: ${error.message}`;
-            } finally {
-                // Reabilita o botão em caso de erro
                 loginButton.disabled = false;
                 loginButton.textContent = 'Entrar';
             }
         });
 
+        pendenciasCard.addEventListener('click', () => {
+            if (globalApiData && globalApiData.tarefas) {
+                renderTasks(globalApiData.tarefas);
+            }
+        });
+
+        backToDashboardBtn.addEventListener('click', () => {
+            tasksSection.style.display = 'none';
+            dashboardSection.style.display = 'block';
+        });
+
     </script>
 </body>
-  </html>
-                  
+</html>
