@@ -14,6 +14,7 @@
         }
         body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--background-color); color: var(--text-color); }
         button, select { cursor: pointer; font-family: 'Poppins', sans-serif; }
+        
         #login-section { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         .login-card { background: var(--card-background); padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
         .login-card .header-icon { background-color: #ede7f6; color: var(--primary-color); width: 60px; height: 60px; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; margin-bottom: 15px; }
@@ -23,6 +24,7 @@
         .login-btn { width: 100%; padding: 15px; background: linear-gradient(90deg, #8e2de2, #4a00e0); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; }
         .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
         #error-message { color: var(--red); margin-top: 15px; font-weight: 600; min-height: 20px;}
+
         #dashboard-section, #tasks-section { padding: 20px; }
         .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .user-profile { display: flex; align-items: center; }
@@ -33,6 +35,7 @@
         .card-pendencias { cursor: pointer; }
         .card h3 { margin: 0; font-size: 16px; color: var(--text-light); font-weight: 400;}
         .card p { margin: 5px 0 0; font-size: 32px; font-weight: 700; }
+
         .tasks-header { display: flex; align-items: center; margin-bottom: 20px; }
         .tasks-header .back-btn { background: none; border: none; margin-right: 15px; }
         .tasks-header h1 { font-size: 22px; margin: 0; }
@@ -41,12 +44,13 @@
         .filters select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; background-color: white; font-size: 14px; }
         #tasks-list { display: flex; flex-direction: column; gap: 15px; margin-top: 25px;}
         .task-card { background: var(--card-background); border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .task-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; gap: 10px; }
+        .task-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 10px; }
         .task-header h3 { margin: 0; font-size: 16px; line-height: 1.4; flex-grow: 1; }
         .task-tag { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; color: white; white-space: nowrap; }
         .task-tag.entregue { background-color: var(--green); } .task-tag.rascunho { background-color: var(--grey); } .task-tag.pendente { background-color: var(--orange); }
         .task-tag.expirada { background-color: var(--red); } .task-tag.prova { background-color: var(--blue); } .task-tag.redacao { background-color: var(--primary-color); }
-        .task-details { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; font-size: 14px; color: var(--text-light); margin-bottom: 20px; font-weight: 500; gap: 15px;}
+        .task-details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; font-size: 13px; color: var(--text-light); margin: 15px 0; font-weight: 500;}
+        .task-details-grid span { display: flex; align-items: center; gap: 5px; }
         .task-note { font-size: 16px; font-weight: 700; color: var(--primary-color); }
         .task-button { width: 100%; padding: 12px; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; transition: all 0.2s; }
         .task-button.do { background-color: var(--green); color: white; } .task-button.doing { background-color: var(--grey); color: white; cursor: not-allowed; }
@@ -142,9 +146,8 @@
                 <button class="btn-start" id="start-timer-btn">Iniciar</button>
             </div>
         </div>
-    </div>
-
-    <script>
+                                                                    </div>
+                        <script>
         const loginSection = document.getElementById('login-section'), appContainer = document.getElementById('app-container'),
               dashboardSection = document.getElementById('dashboard-section'), tasksSection = document.getElementById('tasks-section'),
               loginForm = document.getElementById('loginForm'), pendenciasCard = document.getElementById('pendencias-card'),
@@ -158,13 +161,26 @@
 
         let globalApiData = null, deliveredTasksCache = null, currentFilters = { room: 'all', status: 'all' };
         let taskToDo = { button: null, taskId: null, roomId: null, answerId: null };
+        
+        function formatDuration(secondsStr) {
+            if (!secondsStr) return '-';
+            const totalSeconds = parseFloat(secondsStr);
+            if (isNaN(totalSeconds) || totalSeconds < 1) return '-';
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = Math.floor(totalSeconds % 60);
+            return `${minutes} min ${seconds} s`;
+        }
 
         function getTaskType(task) {
             const statusInfo = { type: 'tarefa', status: 'pendente' };
-            const effectiveTask = { is_exam: task.is_exam ?? task.task_is_exam, is_essay: task.is_essay ?? task.task_is_essay, task_expired: task.task_expired ?? task.expired, };
-            if(task.status === 'finished' || task.status === 'submitted') statusInfo.status = 'entregue';
-            else if (task.answer_status === 'draft') statusInfo.status = 'rascunho';
-            else if (effectiveTask.task_expired) statusInfo.status = 'expirada';
+            const effectiveTask = { is_exam: task.is_exam ?? task.task_is_exam, is_essay: task.is_essay ?? task.task_is_essay, task_expired: task.task_expired ?? task.expired };
+            if(task.answer_status === 'finished' || task.answer_status === 'submitted' || task.status === 'finished' || task.status === 'submitted') {
+                statusInfo.status = 'entregue';
+            } else if (task.answer_status === 'draft') {
+                statusInfo.status = 'rascunho';
+            } else if (effectiveTask.task_expired) {
+                statusInfo.status = 'expirada';
+            }
             if (effectiveTask.is_exam) statusInfo.type = 'prova'; else if (effectiveTask.is_essay) statusInfo.type = 'redacao';
             statusInfo.tagClass = statusInfo.status !== 'pendente' ? statusInfo.status : statusInfo.type;
             const typeName = statusInfo.type.charAt(0).toUpperCase() + statusInfo.type.slice(1);
@@ -192,7 +208,7 @@
                             body: JSON.stringify({ tokenB: globalApiData.tokenB, nick: globalApiData.userInfo.EDUSP_NICK, publicationTargets: targets })
                         });
                         const data = await response.json();
-                        if (!response.ok) throw new Error(data.error || "Falha na API");
+                        if (!response.ok) throw new Error(data.error || "Falha na API de tarefas entregues");
                         deliveredTasksCache = data;
                     }
                     tasksToDisplay = deliveredTasksCache;
@@ -213,7 +229,11 @@
                 } else {
                      filteredTasks.forEach(task => {
                         const typeInfo = getTaskType(task);
-                        const effectiveTask = { title: task.title ?? task.task_title, expire_at: task.expire_at ?? task.task_expire_at, id: task.id ?? task.task_id, publication_target: task.publication_target ?? task.task_publication_target, answer_id: task.answer_id ?? null };
+                        const effectiveTask = {
+                            title: task.title ?? task.task_title, author: task.author ?? task.task_author, expire_at: task.expire_at ?? task.task_expire_at,
+                            id: task.id ?? task.task_id, publication_target: task.publication_target ?? task.task_publication_target,
+                            answer_id: task.answer_id ?? null, question_count: task.question_count ?? task.task_question_count, duration: task.duration ?? "0.00"
+                        };
                         let bottomContent = '';
                         if(typeInfo.status === 'entregue') {
                             bottomContent = `<div class="task-note">Nota: ${task.result_score !== null ? parseFloat(task.result_score).toFixed(1) : 'Aguardando correção'}</div>`;
@@ -223,7 +243,12 @@
                         }
                         const cardHTML = `<div class="task-card">
                             <div class="task-header"><h3>${effectiveTask.title}</h3><span class="task-tag ${typeInfo.tagClass}">${typeInfo.tagText}</span></div>
-                            <div class="task-details"><span><i data-feather="calendar"></i> Entrega: ${new Date(effectiveTask.expire_at).toLocaleDateString('pt-BR')}</span></div>
+                            <div class="task-details-grid">
+                                <span><i data-feather="user"></i> ${effectiveTask.author.split('-')[0]}</span>
+                                <span><i data-feather="calendar"></i> ${new Date(effectiveTask.expire_at).toLocaleDateString('pt-BR')}</span>
+                                <span><i data-feather="hash"></i> ${effectiveTask.question_count || 'N/A'} Questões</span>
+                                <span><i data-feather="clock"></i> ${formatDuration(effectiveTask.duration)}</span>
+                            </div>
                             ${bottomContent}
                         </div>`;
                         tasksList.insertAdjacentHTML('beforeend', cardHTML);
