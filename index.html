@@ -131,9 +131,8 @@
         </section>
     </div>
 
-                    <script>
-        feather.replace();
-        
+        <script>
+        // --- SEÇÃO DE ELEMENTOS E VARIÁVEIS GLOBAIS ---
         const loginSection = document.getElementById('login-section'), appContainer = document.getElementById('app-container'),
               dashboardSection = document.getElementById('dashboard-section'), tasksSection = document.getElementById('tasks-section'),
               loginForm = document.getElementById('loginForm'), pendenciasCard = document.getElementById('pendencias-card'),
@@ -143,10 +142,13 @@
               loginButton = document.getElementById('loginButton'), errorMessageDiv = document.getElementById('error-message');
 
         let globalApiData = null, deliveredTasksCache = null, currentFilters = { room: 'all', status: 'all' };
-        
+
+        // --- SEÇÃO DE FUNÇÕES AUXILIARES ---
+        function formatDate(d) { return d ? new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : 'N/A'; }
+
         function getTaskType(task) {
             const statusInfo = { type: 'tarefa', status: 'pendente', tagClass: 'pendente', tagText: 'Pendente' };
-            const effectiveTask = task.task || task; // A tarefa entregue vem dentro de um objeto 'task'
+            const effectiveTask = task.task || task; 
             if(task.status === 'finished' || task.status === 'submitted') statusInfo.status = 'entregue';
             else if (task.answer_status === 'draft') statusInfo.status = 'rascunho';
             else if (effectiveTask.task_expired) statusInfo.status = 'expirada';
@@ -159,7 +161,8 @@
             statusInfo.tagText = typeName + (statusInfo.status === 'rascunho' ? ' (Rascunho)' : '');
             return statusInfo;
         }
-        
+
+        // --- SEÇÃO DE LÓGICA E RENDERIZAÇÃO ---
         function populateFilters(roomsData) {
             roomFilter.innerHTML = '<option value="all">Todas as Turmas</option>';
             if (roomsData && Array.isArray(roomsData.rooms)) {
@@ -178,7 +181,9 @@
                         const response = await fetch('/api/get-delivered-tasks', {
                             method: 'POST', headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
-                                tokenB: globalApiData.tokenB, nick: globalApiData.userInfo.NM_NICK, publicationTargets: targets
+                                tokenB: globalApiData.tokenB, 
+                                nick: globalApiData.userInfo.EDUSP_NICK,
+                                publicationTargets: targets
                             })
                         });
                         const data = await response.json();
@@ -192,7 +197,6 @@
 
                 tasksJsonOutput.textContent = JSON.stringify(tasksToDisplay, null, 2);
                 tasksList.innerHTML = '';
-
                 const filteredTasks = tasksToDisplay.filter(task => {
                     const typeInfo = getTaskType(task);
                     const effectiveTask = task.task || task;
@@ -203,28 +207,27 @@
 
                 if(filteredTasks.length === 0) {
                     tasksList.innerHTML = '<p style="text-align: center; color: var(--text-light);">Nenhuma atividade encontrada.</p>';
-                    return;
+                } else {
+                     filteredTasks.forEach(task => {
+                        const typeInfo = getTaskType(task);
+                        const effectiveTask = task.task || task;
+                        let bottomContent = '';
+                        if(typeInfo.status === 'entregue') {
+                            bottomContent = `<div class="task-note">Nota: ${task.result_score !== null ? task.result_score : 'Aguardando correção'}</div>`;
+                        } else {
+                            bottomContent = `<button class="task-button do" data-task-id="${effectiveTask.id}" data-room-id="${effectiveTask.publication_target}">Fazer Atividade</button>
+                                             <div class="task-status"></div>`;
+                        }
+                        const cardHTML = `<div class="task-card">
+                            <div class="task-header"><h3>${effectiveTask.title}</h3><span class="task-tag ${typeInfo.tagClass}">${typeInfo.tagText}</span></div>
+                            <div class="task-details">
+                                <span><i data-feather="calendar"></i> Entrega: ${formatDate(effectiveTask.expire_at)}</span>
+                            </div>
+                            ${bottomContent}
+                        </div>`;
+                        tasksList.insertAdjacentHTML('beforeend', cardHTML);
+                    });
                 }
-
-                filteredTasks.forEach(task => {
-                    const typeInfo = getTaskType(task);
-                    const effectiveTask = task.task || task;
-                    let bottomContent = '';
-                    if(typeInfo.status === 'entregue') {
-                        bottomContent = `<div class="task-note">Nota: ${task.result_score !== null ? task.result_score : 'Aguardando correção'}</div>`;
-                    } else {
-                        bottomContent = `<button class="task-button do" data-task-id="${effectiveTask.id}" data-room-id="${effectiveTask.publication_target}">Fazer Atividade</button>
-                                         <div class="task-status"></div>`;
-                    }
-                    const cardHTML = `<div class="task-card">
-                        <div class="task-header"><h3>${effectiveTask.title}</h3><span class="task-tag ${typeInfo.tagClass}">${typeInfo.tagText}</span></div>
-                        <div class="task-details">
-                            <span><i data-feather="calendar"></i> Entrega: ${formatDate(effectiveTask.expire_at)}</span>
-                        </div>
-                        ${bottomContent}
-                    </div>`;
-                    tasksList.insertAdjacentHTML('beforeend', cardHTML);
-                });
                 feather.replace();
             } catch (error) {
                 tasksList.innerHTML = `<p style="text-align: center; color: var(--red);">Erro: ${error.message}</p>`;
@@ -262,6 +265,7 @@
         function showDashboard() { dashboardSection.style.display = 'block'; tasksSection.style.display = 'none'; }
         function showTasks() { renderTasks(); dashboardSection.style.display = 'none'; tasksSection.style.display = 'block'; }
         
+        // --- SEÇÃO DE EVENT LISTENERS ---
         loginForm.addEventListener('submit', async function(event) {
             event.preventDefault();
             const ra = document.getElementById('ra').value, senha = document.getElementById('senha').value;
@@ -280,7 +284,7 @@
                 document.getElementById('user-name').textContent = userInfo.NAME.split(' ')[0];
                 document.getElementById('user-avatar').textContent = userInfo.NAME.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
                 document.getElementById('pendencias-count').textContent = tarefas.filter(t => ['pendente', 'rascunho'].includes(getTaskType(t).status)).length;
-                document.getElementById('faltas-count').textContent = faltas.length > 0 ? faltas[0].totalFaltasBimestre : 0;
+                document.getElementById('faltas-count').textContent = faltas.length > 0 ? faltas[0].totalFasltasBimestre : 0;
 
                 loginSection.style.display = 'none'; appContainer.style.display = 'block'; showDashboard();
             } catch (error) {
@@ -302,6 +306,8 @@
                 doTask(event.target);
             }
         });
+
+        feather.replace();
     </script>
 </body>
 </html>
