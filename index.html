@@ -68,12 +68,8 @@
             <h1>Bem-vindo!</h1>
             <p>Faça login para continuar</p>
             <form id="loginForm">
-                <div class="input-group">
-                    <i data-feather="user"></i><input type="text" id="ra" placeholder="Seu RA (com dígito e UF)" required>
-                </div>
-                <div class="input-group">
-                    <i data-feather="lock"></i><input type="password" id="senha" placeholder="Sua Senha" required>
-                </div>
+                <div class="input-group"><i data-feather="user"></i><input type="text" id="ra" placeholder="Seu RA (com dígito e UF)" required></div>
+                <div class="input-group"><i data-feather="lock"></i><input type="password" id="senha" placeholder="Sua Senha" required></div>
                 <button type="submit" id="loginButton" class="login-btn">Entrar</button>
                 <div id="error-message"></div>
             </form>
@@ -118,19 +114,9 @@
                     <option value="redacao">Apenas Redações</option>
                 </select>
             </div>
-            <div class="debug-section">
-                <details>
-                    <summary>Dados Brutos das Turmas (JSON)</summary>
-                    <pre><code id="rooms-json-output"></code></pre>
-                </details>
-            </div>
+            <div class="debug-section"><details><summary>Dados Brutos das Turmas (JSON)</summary><pre><code id="rooms-json-output"></code></pre></details></div>
             <div id="tasks-list"></div>
-            <div class="debug-section">
-                <details>
-                    <summary>Dados Brutos das Tarefas (JSON)</summary>
-                    <pre><code id="tasks-json-output"></code></pre>
-                </details>
-            </div>
+            <div class="debug-section"><details><summary>Dados Brutos das Tarefas (JSON)</summary><pre><code id="tasks-json-output"></code></pre></details></div>
         </section>
     </div>
 
@@ -153,25 +139,31 @@
             return diffDays <= 1 ? '1 dia' : `${diffDays} dias`;
         }
 
-        /** LÓGICA DE CLASSIFICAÇÃO FINAL */
         function getTaskType(task) {
             const statusInfo = { type: 'tarefa', status: 'pendente', tagClass: 'pendente', tagText: 'Pendente' };
-
             if (task.is_exam) statusInfo.type = 'prova';
             else if (task.is_essay) statusInfo.type = 'redacao';
-            
             if (task.answer_status === 'draft') statusInfo.status = 'rascunho';
             else if (task.task_expired) statusInfo.status = 'expirada';
-            
             statusInfo.tagClass = statusInfo.status !== 'pendente' ? statusInfo.status : statusInfo.type;
-            statusInfo.tagText = (statusInfo.type.charAt(0).toUpperCase() + statusInfo.type.slice(1)) + (statusInfo.status === 'rascunho' ? ' (Rascunho)' : '');
-            
+            const typeName = statusInfo.type.charAt(0).toUpperCase() + statusInfo.type.slice(1);
+            statusInfo.tagText = statusInfo.status === 'rascunho' ? `${typeName} (Rascunho)` : typeName;
             return statusInfo;
         }
         
-        function populateFilters(rooms) {
+        /** FUNÇÃO APRIMORADA PARA POPULAR O FILTRO DE TURMAS */
+        function populateFilters(roomsData) {
             roomFilter.innerHTML = '<option value="all">Todas as Turmas</option>';
-            if (rooms) rooms.forEach(room => roomFilter.add(new Option(room.name, room.publication_target)));
+            if (roomsData && Array.isArray(roomsData.rooms)) {
+                roomsData.rooms.forEach(room => {
+                    // O `publication_target` de uma tarefa é o `name` da sala.
+                    // O `topic` é o nome legível que vamos mostrar.
+                    const roomName = room.topic || room.name; // Usa o 'topic' como nome, se não tiver, usa o 'name'
+                    const roomId = room.name; // O ID para filtrar é o campo 'name' da sala.
+                    const option = new Option(roomName, roomId);
+                    roomFilter.add(option);
+                });
+            }
         }
         
         function renderTasks() {
@@ -180,8 +172,15 @@
 
             const filteredTasks = globalApiData.tarefas.filter(task => {
                 const typeInfo = getTaskType(task);
+                // O `publication_target` da TAREFA corresponde ao `name` da SALA.
                 const roomMatch = currentFilters.room === 'all' || task.publication_target === currentFilters.room;
-                const statusMatch = currentFilters.status === 'all' || typeInfo.type === currentFilters.status || typeInfo.status === currentFilters.status;
+                const statusMatch = currentFilters.status === 'all' 
+                    || (currentFilters.status === 'pendente' && typeInfo.status === 'pendente')
+                    || (currentFilters.status === 'rascunho' && typeInfo.status === 'rascunho')
+                    || (currentFilters.status === 'expirada' && typeInfo.status === 'expirada' && typeInfo.type === 'tarefa') // Apenas TAREFAS expiradas
+                    || (currentFilters.status === 'prova' && typeInfo.type === 'prova')
+                    || (currentFilters.status === 'redacao' && typeInfo.type === 'redacao');
+
                 return roomMatch && statusMatch;
             });
 
@@ -210,8 +209,7 @@
         
         loginForm.addEventListener('submit', async function(event) {
             event.preventDefault();
-            const ra = document.getElementById('ra').value;
-            const senha = document.getElementById('senha').value;
+            const ra = document.getElementById('ra').value, senha = document.getElementById('senha').value;
             loginButton.disabled = true; loginButton.textContent = 'Carregando...'; errorMessageDiv.textContent = '';
             try {
                 const response = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user: ra, senha: senha })});
@@ -221,12 +219,12 @@
                 globalApiData = data;
                 roomsJsonOutput.textContent = JSON.stringify(data.roomUserData, null, 2);
                 tasksJsonOutput.textContent = JSON.stringify(data.tarefas, null, 2);
-                populateFilters(data.roomUserData ? data.roomUserData.rooms : []);
+                populateFilters(data.roomUserData);
                 
                 const { userInfo, faltas, tarefas } = data;
                 document.getElementById('user-name').textContent = userInfo.NAME.split(' ')[0];
                 document.getElementById('user-avatar').textContent = userInfo.NAME.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-                document.getElementById('pendencias-count').textContent = tarefas.filter(t => getTaskType(t).status === 'pendente').length;
+                document.getElementById('pendencias-count').textContent = tarefas.filter(t => getTaskType(t).status === 'pendente' || getTaskType(t).status === 'rascunho').length;
                 document.getElementById('faltas-count').textContent = faltas.length > 0 ? faltas[0].totalFaltasBimestre : 0;
 
                 loginSection.style.display = 'none'; appContainer.style.display = 'block'; showDashboard();
@@ -246,5 +244,4 @@
         statusFilter.addEventListener('change', (e) => { currentFilters.status = e.target.value; renderTasks(); });
     </script>
 </body>
-    </html>
-    
+</html>
