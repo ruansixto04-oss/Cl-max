@@ -19,7 +19,7 @@ module.exports = async (req, res) => {
         if (!user || !senha) { return res.status(400).json({ error: 'RA e Senha são obrigatórios.' }); }
         
         const loginResponse = await axios.post("https://sedintegracoes.educacao.sp.gov.br/credenciais/api/LoginCompletoToken", { user, senha }, { headers: { "Ocp-Apim-Subscription-Key": "2b03c1db3884488795f79c37c069381a" } });
-        if (!loginResponse.data || !loginResponse.data.token) { return res.status(401).json({ error: 'Credenciais inválidas ou resposta inesperada da SED.' }); }
+        if (!loginResponse.data || !loginResponse.data.token) { return res.status(401).json({ error: 'Credenciais inválidas.' }); }
         const tokenA = loginResponse.data.token;
         const userInfo = loginResponse.data.DadosUsuario;
         
@@ -27,10 +27,13 @@ module.exports = async (req, res) => {
         if (!exchangeResponse.data || !exchangeResponse.data.auth_token) { return res.status(500).json({ error: 'Falha ao obter o token secundário (Token B).' }); }
         const tokenB = exchangeResponse.data.auth_token;
         
+        // **MUDANÇA CRÍTICA AQUI**
+        // Capturamos o `nick` correto da resposta da troca de token e o adicionamos ao `userInfo`.
+        userInfo.EDUSP_NICK = exchangeResponse.data.nick;
+        
         console.log("Fase 3: Buscando dados...");
         const roomUserData = await fetchApiData({
-            method: 'get',
-            url: 'https://edusp-api.ip.tv/room/user?list_all=true&with_cards=true',
+            method: 'get', url: 'https://edusp-api.ip.tv/room/user?list_all=true&with_cards=true',
             headers: { "x-api-key": tokenB, "Referer": "https://saladofuturo.educacao.sp.gov.br/" }
         });
 
@@ -63,19 +66,10 @@ module.exports = async (req, res) => {
         const allTasksRaw = (Array.isArray(pendingTasks) ? pendingTasks : []).concat(Array.isArray(expiredTasks) ? expiredTasks : []);
         const allTasks = [...new Map(allTasksRaw.map(task => [task.id, task])).values()];
 
-        // **A CORREÇÃO ESTÁ AQUI**
-        // Adicionamos o `tokenB` de volta ao objeto que enviamos para o frontend.
-        const dashboardData = {
-            tokenB, // <--- ADICIONADO DE VOLTA!
-            userInfo,
-            roomUserData,
-            faltas: faltasFormatado,
-            tarefas: allTasks
-        };
+        const dashboardData = { tokenB, userInfo, roomUserData, faltas: faltasFormatado, tarefas: allTasks };
         
         console.log("--- FIM /api/login: Sucesso ---");
         res.status(200).json(dashboardData);
-
     } catch (error) {
         console.error("--- ERRO FATAL NA FUNÇÃO /api/login ---", error.response?.data || error.message);
         const status = error.response?.status || 500;
@@ -83,4 +77,4 @@ module.exports = async (req, res) => {
         res.status(status).json({ error: message, details: error.message });
     }
 };
-        
+    
