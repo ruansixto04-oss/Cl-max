@@ -5,31 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRSP - Dashboard do Aluno</title>
     <script src="https://unpkg.com/feather-icons"></script>
-    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         :root {
             --primary-color: #673ab7; --background-color: #f0f2f5; --card-background: #ffffff;
             --text-color: #333; --text-light: #888; --orange: #ff9800; --yellow: #ffc107;
-            --red: #f44336; --blue: #2196F3; --green: #4CAF50;
+            --red: #f44336; --blue: #2196F3; --green: #4CAF50; --grey: #9e9e9e;
             --button-gradient: linear-gradient(90deg, #8e2de2, #4a00e0);
         }
         body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--background-color); color: var(--text-color); }
         button, select { cursor: pointer; font-family: 'Poppins', sans-serif; }
-        
-        /* Estilos do Login (sem alterações) */
         #login-section { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .login-card { background: var(--card-background); padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); width: 100%; max-width: 400px; text-align: center; }
+        .login-card { background: var(--card-background); padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
         .login-card .header-icon { background-color: #ede7f6; color: var(--primary-color); width: 60px; height: 60px; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; margin-bottom: 15px; }
-        .login-card h1 { margin: 0 0 10px 0; font-size: 24px; }
         .input-group { position: relative; margin-bottom: 20px; }
         .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-light); }
         .input-group input { width: 100%; padding: 15px 15px 15px 50px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
         .login-btn { width: 100%; padding: 15px; background: var(--button-gradient); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; }
         .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
         #error-message { color: var(--red); margin-top: 15px; font-weight: 600; min-height: 20px;}
-
-        /* Estilos da Dashboard (sem alterações) */
         #dashboard-section { padding: 20px; }
         .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .user-profile { display: flex; align-items: center; }
@@ -38,20 +32,21 @@
         .card { background: var(--card-background); border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: transform 0.2s; }
         .card:hover { transform: scale(1.03); }
         .card-pendencias { cursor: pointer; }
-
-        /* Estilos da Tela de Tarefas (Aprimorado) */
+        .card h3 { margin: 0; font-size: 16px; color: var(--text-light); font-weight: 400;}
+        .card p { margin: 5px 0 0; font-size: 32px; font-weight: 700; }
         #tasks-section { padding: 20px; display: none; }
         .tasks-header { display: flex; align-items: center; margin-bottom: 20px; }
         .tasks-header .back-btn { background: none; border: none; margin-right: 15px; }
         .tasks-header h1 { font-size: 22px; margin: 0; }
-        .filters { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 25px; }
-        @media (min-width: 600px) { .filters { grid-template-columns: 1fr 1fr; } } /* Lado a lado em telas maiores */
+        .filters { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 10px; }
+        @media (min-width: 600px) { .filters { grid-template-columns: 1fr 1fr; } }
         .filters select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; background-color: white; font-size: 14px; }
-        #tasks-list { display: flex; flex-direction: column; gap: 15px; }
+        #tasks-list { display: flex; flex-direction: column; gap: 15px; margin-top: 25px;}
         .task-card { background: var(--card-background); border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .task-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; gap: 10px; }
         .task-header h3 { margin: 0; font-size: 16px; line-height: 1.4; flex-grow: 1; }
         .task-tag { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; color: white; white-space: nowrap; }
+        .task-tag.rascunho { background-color: var(--grey); }
         .task-tag.pendente { background-color: var(--orange); }
         .task-tag.expirada { background-color: var(--red); }
         .task-tag.prova { background-color: var(--blue); }
@@ -59,12 +54,10 @@
         .task-details { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; font-size: 14px; color: var(--text-light); margin-bottom: 20px; font-weight: 500; gap: 15px;}
         .task-details span { display: flex; align-items: center; gap: 5px; }
         .task-button { width: 100%; padding: 12px; background-color: var(--green); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; }
-        
-        /* Janela de Depuração */
-        .debug-section { margin-top: 40px; }
+        .debug-section { margin-top: 15px; }
         .debug-section details { background-color: var(--card-background); border-radius: 10px; padding: 10px; border: 1px solid #eee;}
         .debug-section summary { font-weight: 600; cursor: pointer; padding: 5px;}
-        .debug-section pre { background-color: #2d2d2d; color: #f1f1f1; padding: 15px; border-radius: 8px; white-space: pre-wrap; word-wrap: break-word; font-size: 12px; max-height: 400px; overflow-y: auto; }
+        .debug-section pre { background-color: #2d2d2d; color: #f1f1f1; padding: 15px; border-radius: 8px; white-space: pre-wrap; word-wrap: break-word; font-size: 12px; max-height: 250px; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -76,12 +69,10 @@
             <p>Faça login para continuar</p>
             <form id="loginForm">
                 <div class="input-group">
-                    <i data-feather="user"></i>
-                    <input type="text" id="ra" placeholder="Seu RA (com dígito e UF)" required>
+                    <i data-feather="user"></i><input type="text" id="ra" placeholder="Seu RA (com dígito e UF)" required>
                 </div>
                 <div class="input-group">
-                    <i data-feather="lock"></i>
-                    <input type="password" id="senha" placeholder="Sua Senha" required>
+                    <i data-feather="lock"></i><input type="password" id="senha" placeholder="Sua Senha" required>
                 </div>
                 <button type="submit" id="loginButton" class="login-btn">Entrar</button>
                 <div id="error-message"></div>
@@ -94,8 +85,7 @@
              <header class="dashboard-header">
                 <button class="menu-btn"><i data-feather="menu"></i></button>
                 <div class="user-profile">
-                    <span>Olá, <strong id="user-name">...</strong></span>
-                    <div class="avatar" id="user-avatar">--</div>
+                    <span>Olá, <strong id="user-name">...</strong></span><div class="avatar" id="user-avatar">--</div>
                 </div>
             </header>
             <main>
@@ -122,16 +112,23 @@
                 <select id="status-filter">
                     <option value="all">Todos os Tipos</option>
                     <option value="pendente">Apenas Pendentes</option>
+                    <option value="rascunho">Apenas Rascunhos</option>
                     <option value="expirada">Apenas Expiradas</option>
                     <option value="prova">Apenas Provas</option>
                     <option value="redacao">Apenas Redações</option>
                 </select>
             </div>
+            <div class="debug-section">
+                <details>
+                    <summary>Dados Brutos das Turmas (JSON)</summary>
+                    <pre><code id="rooms-json-output"></code></pre>
+                </details>
+            </div>
             <div id="tasks-list"></div>
             <div class="debug-section">
                 <details>
-                    <summary>Dados Brutos da API (JSON)</summary>
-                    <pre><code id="json-output"></code></pre>
+                    <summary>Dados Brutos das Tarefas (JSON)</summary>
+                    <pre><code id="tasks-json-output"></code></pre>
                 </details>
             </div>
         </section>
@@ -139,26 +136,16 @@
 
     <script>
         feather.replace();
-        
-        // Elementos da UI
-        const loginSection = document.getElementById('login-section');
-        const appContainer = document.getElementById('app-container');
-        const dashboardSection = document.getElementById('dashboard-section');
-        const tasksSection = document.getElementById('tasks-section');
-        const loginForm = document.getElementById('loginForm');
-        const pendenciasCard = document.getElementById('pendencias-card');
-        const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
-        const roomFilter = document.getElementById('room-filter');
-        const statusFilter = document.getElementById('status-filter');
-        const tasksList = document.getElementById('tasks-list');
-        const jsonOutput = document.getElementById('json-output');
-        const loginButton = document.getElementById('loginButton');
-        const errorMessageDiv = document.getElementById('error-message');
+        const loginSection = document.getElementById('login-section'), appContainer = document.getElementById('app-container'),
+              dashboardSection = document.getElementById('dashboard-section'), tasksSection = document.getElementById('tasks-section'),
+              loginForm = document.getElementById('loginForm'), pendenciasCard = document.getElementById('pendencias-card'),
+              backToDashboardBtn = document.getElementById('back-to-dashboard-btn'), roomFilter = document.getElementById('room-filter'),
+              statusFilter = document.getElementById('status-filter'), tasksList = document.getElementById('tasks-list'),
+              roomsJsonOutput = document.getElementById('rooms-json-output'), tasksJsonOutput = document.getElementById('tasks-json-output'),
+              loginButton = document.getElementById('loginButton'), errorMessageDiv = document.getElementById('error-message');
 
-        let globalApiData = null;
-        let currentFilters = { room: 'all', status: 'all' };
+        let globalApiData = null, currentFilters = { room: 'all', status: 'all' };
         
-        // --- FUNÇÕES AUXILIARES ---
         function formatDate(d) { return d ? new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : 'N/A'; }
         function calculateDuration(s, e) {
             if (!s || !e) return '-';
@@ -166,35 +153,25 @@
             return diffDays <= 1 ? '1 dia' : `${diffDays} dias`;
         }
 
-        /**
-         * FUNÇÃO DE CLASSIFICAÇÃO APRIMORADA
-         * Usa os campos `is_exam`, `is_essay` e `task_expired` para classificar com 100% de precisão.
-         */
+        /** LÓGICA DE CLASSIFICAÇÃO FINAL */
         function getTaskType(task) {
-            if (task.is_exam) {
-                const status = task.task_expired ? 'expirada' : 'pendente';
-                return { type: 'prova', status: status, tagClass: 'prova', tagText: 'Prova' };
-            }
-            if (task.is_essay) {
-                const status = task.task_expired ? 'expirada' : 'pendente';
-                return { type: 'redacao', status: status, tagClass: 'redacao', tagText: 'Redação' };
-            }
-            if (task.task_expired) {
-                return { type: 'tarefa', status: 'expirada', tagClass: 'expirada', tagText: 'Expirada' };
-            }
-            return { type: 'tarefa', status: 'pendente', tagClass: 'pendente', tagText: 'Pendente' };
-        }
+            const statusInfo = { type: 'tarefa', status: 'pendente', tagClass: 'pendente', tagText: 'Pendente' };
 
-        // --- FUNÇÕES DE LÓGICA E RENDERIZAÇÃO ---
+            if (task.is_exam) statusInfo.type = 'prova';
+            else if (task.is_essay) statusInfo.type = 'redacao';
+            
+            if (task.answer_status === 'draft') statusInfo.status = 'rascunho';
+            else if (task.task_expired) statusInfo.status = 'expirada';
+            
+            statusInfo.tagClass = statusInfo.status !== 'pendente' ? statusInfo.status : statusInfo.type;
+            statusInfo.tagText = (statusInfo.type.charAt(0).toUpperCase() + statusInfo.type.slice(1)) + (statusInfo.status === 'rascunho' ? ' (Rascunho)' : '');
+            
+            return statusInfo;
+        }
+        
         function populateFilters(rooms) {
             roomFilter.innerHTML = '<option value="all">Todas as Turmas</option>';
-            if (rooms) {
-                rooms.forEach(room => {
-                    // MUDANÇA AQUI: Agora mostra o nome da turma no filtro!
-                    const option = new Option(room.name, room.publication_target);
-                    roomFilter.add(option);
-                });
-            }
+            if (rooms) rooms.forEach(room => roomFilter.add(new Option(room.name, room.publication_target)));
         }
         
         function renderTasks() {
@@ -204,12 +181,7 @@
             const filteredTasks = globalApiData.tarefas.filter(task => {
                 const typeInfo = getTaskType(task);
                 const roomMatch = currentFilters.room === 'all' || task.publication_target === currentFilters.room;
-                const statusMatch = currentFilters.status === 'all' 
-                    || (currentFilters.status === 'pendente' && typeInfo.status === 'pendente' && typeInfo.type === 'tarefa') // Apenas tarefas pendentes
-                    || (currentFilters.status === 'expirada' && typeInfo.status === 'expirada') // Qualquer tipo expirado
-                    || (currentFilters.status === 'prova' && typeInfo.type === 'prova') // Qualquer prova (pendente ou expirada)
-                    || (currentFilters.status === 'redacao' && typeInfo.type === 'redacao'); // Qualquer redação
-
+                const statusMatch = currentFilters.status === 'all' || typeInfo.type === currentFilters.status || typeInfo.status === currentFilters.status;
                 return roomMatch && statusMatch;
             });
 
@@ -220,18 +192,14 @@
 
             filteredTasks.forEach(task => {
                 const typeInfo = getTaskType(task);
-                const cardHTML = `
-                    <div class="task-card">
-                        <div class="task-header">
-                            <h3>${task.title}</h3>
-                            <span class="task-tag ${typeInfo.tagClass}">${typeInfo.tagText}</span>
-                        </div>
-                        <div class="task-details">
-                            <span><i data-feather="clock"></i> Duração: ${calculateDuration(task.publish_at, task.expire_at)}</span>
-                            <span><i data-feather="calendar"></i> Entrega: ${formatDate(task.expire_at)}</span>
-                        </div>
-                        <button class="task-button">${typeInfo.status === 'expirada' ? 'Ver Detalhes' : 'Fazer Atividade'}</button>
-                    </div>`;
+                const cardHTML = `<div class="task-card">
+                    <div class="task-header"><h3>${task.title}</h3><span class="task-tag ${typeInfo.tagClass}">${typeInfo.tagText}</span></div>
+                    <div class="task-details">
+                        <span><i data-feather="clock"></i> Duração: ${calculateDuration(task.publish_at, task.expire_at)}</span>
+                        <span><i data-feather="calendar"></i> Entrega: ${formatDate(task.expire_at)}</span>
+                    </div>
+                    <button class="task-button">${typeInfo.status === 'expirada' ? 'Ver Detalhes' : 'Continuar Atividade'}</button>
+                </div>`;
                 tasksList.insertAdjacentHTML('beforeend', cardHTML);
             });
             feather.replace();
@@ -240,47 +208,37 @@
         function showDashboard() { dashboardSection.style.display = 'block'; tasksSection.style.display = 'none'; }
         function showTasks() { renderTasks(); dashboardSection.style.display = 'none'; tasksSection.style.display = 'block'; }
         
-        // --- EVENT LISTENERS ---
         loginForm.addEventListener('submit', async function(event) {
             event.preventDefault();
             const ra = document.getElementById('ra').value;
             const senha = document.getElementById('senha').value;
-            loginButton.disabled = true;
-            loginButton.textContent = 'Carregando...';
-            errorMessageDiv.textContent = '';
+            loginButton.disabled = true; loginButton.textContent = 'Carregando...'; errorMessageDiv.textContent = '';
             try {
                 const response = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user: ra, senha: senha })});
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.error || 'Falha no login');
                 
                 globalApiData = data;
-                jsonOutput.textContent = JSON.stringify(data.tarefas, null, 2);
+                roomsJsonOutput.textContent = JSON.stringify(data.roomUserData, null, 2);
+                tasksJsonOutput.textContent = JSON.stringify(data.tarefas, null, 2);
                 populateFilters(data.roomUserData ? data.roomUserData.rooms : []);
                 
                 const { userInfo, faltas, tarefas } = data;
                 document.getElementById('user-name').textContent = userInfo.NAME.split(' ')[0];
                 document.getElementById('user-avatar').textContent = userInfo.NAME.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-                
-                // Filtra para contar apenas tarefas que não são provas ou redações
-                const tarefasPendentes = tarefas.filter(t => getTaskType(t).type === 'tarefa' && getTaskType(t).status === 'pendente').length;
-                document.getElementById('pendencias-count').textContent = tarefasPendentes;
-                
+                document.getElementById('pendencias-count').textContent = tarefas.filter(t => getTaskType(t).status === 'pendente').length;
                 document.getElementById('faltas-count').textContent = faltas.length > 0 ? faltas[0].totalFaltasBimestre : 0;
 
-                loginSection.style.display = 'none';
-                appContainer.style.display = 'block';
-                showDashboard();
+                loginSection.style.display = 'none'; appContainer.style.display = 'block'; showDashboard();
             } catch (error) {
                 errorMessageDiv.textContent = `Erro: ${error.message}`;
-                loginButton.disabled = false;
-                loginButton.textContent = 'Entrar';
+                loginButton.disabled = false; loginButton.textContent = 'Entrar';
             }
         });
 
         pendenciasCard.addEventListener('click', () => {
-            currentFilters = { room: 'all', status: 'all' }; // Mostra tudo ao clicar
-            roomFilter.value = 'all';
-            statusFilter.value = 'all';
+            currentFilters = { room: 'all', status: 'all' };
+            roomFilter.value = 'all'; statusFilter.value = 'all';
             showTasks();
         });
         backToDashboardBtn.addEventListener('click', showDashboard);
@@ -288,4 +246,5 @@
         statusFilter.addEventListener('change', (e) => { currentFilters.status = e.target.value; renderTasks(); });
     </script>
 </body>
-</html>
+    </html>
+    
