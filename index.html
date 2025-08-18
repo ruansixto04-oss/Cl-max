@@ -7,16 +7,17 @@
     <script src="https://unpkg.com/feather-icons"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         :root {
             --primary-color: #673ab7; --background-color: #f0f2f5; --card-background: #ffffff;
             --text-color: #333; --text-light: #888; --orange: #ff9800; --yellow: #ffc107;
-            --button-gradient: linear-gradient(90deg, #8e2de2, #4a00e0); --green: #4CAF50;
+            --red: #f44336; --blue: #2196F3; --green: #4CAF50;
+            --button-gradient: linear-gradient(90deg, #8e2de2, #4a00e0);
         }
         body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--background-color); color: var(--text-color); }
-        button { cursor: pointer; }
+        button, select { cursor: pointer; font-family: 'Poppins', sans-serif; }
         
-        /* ----- TELA DE LOGIN ----- */
+        /* Estilos do Login */
         #login-section { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         .login-card { background: var(--card-background); padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); width: 100%; max-width: 400px; text-align: center; }
         .login-card .header-icon { background-color: #ede7f6; color: var(--primary-color); width: 60px; height: 60px; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; margin-bottom: 15px; }
@@ -27,40 +28,49 @@
         .input-group input { width: 100%; padding: 15px 15px 15px 50px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
         .login-btn { width: 100%; padding: 15px; background: var(--button-gradient); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; transition: opacity 0.3s; }
         .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        #error-message { color: #f44336; margin-top: 15px; font-weight: 600; }
-        
-        /* ----- DASHBOARD ----- */
-        #dashboard-section { padding: 20px; display: block; } /* Mudança: começa visível */
+        #error-message { color: #f44336; margin-top: 15px; font-weight: 600; min-height: 20px;}
+
+        /* Estilos da Dashboard */
+        #dashboard-section { padding: 20px; }
         .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .menu-btn { background: none; border: none; }
         .user-profile { display: flex; align-items: center; }
         .user-profile .avatar { width: 40px; height: 40px; border-radius: 12px; background-color: var(--primary-color); color: white; display: flex; justify-content: center; align-items: center; font-weight: 600; margin-left: 10px; }
         .summary-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
-        .card { background: var(--card-background); border-radius: 15px; padding: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .card:hover { transform: scale(1.03); transition: transform 0.2s; }
+        .card { background: var(--card-background); border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: transform 0.2s; }
+        .card:hover { transform: scale(1.03); }
+        .card-pendencias { cursor: pointer; }
         .card h3 { margin: 0; font-size: 16px; color: var(--text-light); font-weight: 400;}
         .card p { margin: 5px 0 0; font-size: 32px; font-weight: 700; }
         .card-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; justify-content: center; align-items: center; }
-        .card-pendencias { cursor: pointer; } /* Adicionado para indicar que é clicável */
         .card-pendencias .card-icon { background-color: #ffeadd; color: var(--orange); }
         .card-pendencias p { color: var(--orange); }
         .card-faltas .card-icon { background-color: #fff0c7; color: var(--yellow); }
         .card-faltas p { color: var(--yellow); }
-        .platforms h2 { font-size: 18px; margin-bottom: 15px; color: var(--text-light); font-weight: 600; }
-        .platform-item { display: flex; justify-content: space-between; align-items: center; background-color: var(--card-background); padding: 15px 20px; border-radius: 12px; margin-bottom: 10px; text-decoration: none; color: var(--text-color); font-weight: 600; }
-        .notification-badge { background-color: #f44336; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; justify-content: center; align-items: center; font-size: 12px; }
-
-        /* ----- NOVA TELA DE TAREFAS ----- */
-        #tasks-section { padding: 20px; display: none; } /* Começa escondida */
+        
+        /* Estilos da Tela de Tarefas Avançada */
+        #tasks-section { padding: 20px; display: none; }
         .tasks-header { display: flex; align-items: center; margin-bottom: 20px; }
         .tasks-header .back-btn { background: none; border: none; margin-right: 15px; }
         .tasks-header h1 { font-size: 22px; margin: 0; }
+        .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .filters select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; background-color: white; font-size: 14px; }
         #tasks-list { display: flex; flex-direction: column; gap: 15px; }
         .task-card { background: var(--card-background); border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .task-card h3 { margin: 0 0 15px 0; font-size: 18px; }
-        .task-details { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: var(--text-light); margin-bottom: 20px; }
+        .task-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .task-header h3 { margin: 0; font-size: 16px; line-height: 1.4; padding-right: 10px; }
+        .task-tag { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; color: white; white-space: nowrap; }
+        .task-tag.pendente { background-color: var(--orange); }
+        .task-tag.expirada { background-color: var(--red); }
+        .task-tag.prova { background-color: var(--blue); }
+        .task-tag.redacao { background-color: var(--primary-color); }
+        .task-details { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; font-size: 14px; color: var(--text-light); margin-bottom: 20px; font-weight: 500; gap: 10px;}
         .task-details span { display: flex; align-items: center; gap: 5px; }
         .task-button { width: 100%; padding: 12px; background-color: var(--green); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; }
+        .debug-section { margin-top: 40px; }
+        .debug-section details { background-color: var(--card-background); border-radius: 10px; padding: 10px; border: 1px solid #eee;}
+        .debug-section summary { font-weight: 600; cursor: pointer; padding: 5px;}
+        .debug-section pre { background-color: #2d2d2d; color: #f1f1f1; padding: 15px; border-radius: 8px; white-space: pre-wrap; word-wrap: break-word; font-size: 12px; max-height: 400px; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -85,8 +95,9 @@
         </div>
     </section>
 
-    <div id="app-container" style="display: none;"> <section id="dashboard-section">
-            <header class="dashboard-header">
+    <div id="app-container" style="display: none;">
+        <section id="dashboard-section">
+             <header class="dashboard-header">
                 <button class="menu-btn"><i data-feather="menu"></i></button>
                 <div class="user-profile">
                     <span>Olá, <strong id="user-name">...</strong></span>
@@ -96,26 +107,13 @@
             <main>
                 <section class="summary-cards">
                     <div class="card card-pendencias" id="pendencias-card">
-                        <div class="card-content">
-                            <h3>Pendências</h3>
-                            <p id="pendencias-count">0</p>
-                        </div>
+                        <div class="card-content"><h3>Pendências</h3><p id="pendencias-count">0</p></div>
                         <div class="card-icon"><i data-feather="calendar"></i></div>
                     </div>
                     <div class="card card-faltas">
-                        <div class="card-content">
-                            <h3>Faltas</h3>
-                            <p id="faltas-count">0</p>
-                        </div>
+                        <div class="card-content"><h3>Faltas</h3><p id="faltas-count">0</p></div>
                         <div class="card-icon"><i data-feather="user-x"></i></div>
                     </div>
-                </section>
-                <section class="platforms">
-                    <h2>Plataformas</h2>
-                    <a href="#" class="platform-item">
-                        <span>Tarefa SP</span>
-                        <span class="notification-badge" id="tarefa-sp-badge">0</span>
-                    </a>
                 </section>
             </main>
         </section>
@@ -123,119 +121,126 @@
         <section id="tasks-section">
             <header class="tasks-header">
                 <button class="back-btn" id="back-to-dashboard-btn"><i data-feather="arrow-left"></i></button>
-                <h1>Minhas Pendências</h1>
+                <h1>Minhas Atividades</h1>
             </header>
-            <div id="tasks-list">
-                </div>
+            <div class="filters">
+                <select id="room-filter"></select>
+                <select id="status-filter">
+                    <option value="all">Todos os Tipos</option>
+                    <option value="pendente">Apenas Pendentes</option>
+                    <option value="expirada">Apenas Expiradas</option>
+                    <option value="prova">Apenas Provas</option>
+                    <option value="redacao">Apenas Redações</option>
+                </select>
+            </div>
+            <div id="tasks-list"></div>
+            <div class="debug-section">
+                <details>
+                    <summary>Dados Brutos da API (JSON)</summary>
+                    <pre><code id="json-output"></code></pre>
+                </details>
+            </div>
         </section>
     </div>
 
     <script>
         feather.replace();
         
-        // Elementos das seções
         const loginSection = document.getElementById('login-section');
         const appContainer = document.getElementById('app-container');
         const dashboardSection = document.getElementById('dashboard-section');
         const tasksSection = document.getElementById('tasks-section');
-        
-        // Elementos interativos
         const loginForm = document.getElementById('loginForm');
-        const loginButton = document.getElementById('loginButton');
-        const errorMessageDiv = document.getElementById('error-message');
         const pendenciasCard = document.getElementById('pendencias-card');
         const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
+        const roomFilter = document.getElementById('room-filter');
+        const statusFilter = document.getElementById('status-filter');
+        const tasksList = document.getElementById('tasks-list');
+        const jsonOutput = document.getElementById('json-output');
+        const loginButton = document.getElementById('loginButton');
+        const errorMessageDiv = document.getElementById('error-message');
+
+        let globalApiData = null;
+        let currentFilters = { room: 'all', status: 'all' };
+
+        function formatDate(d) { return d ? new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : 'N/A'; }
+        function calculateDuration(s, e) { return s&&e?`${Math.ceil(Math.abs(new Date(e)-new Date(s))/(1e3*60*60*24))} dias`:'-';}
+
+        function getTaskType(task) {
+            const title = task.title.toLowerCase();
+            if (title.includes('prova') || title.includes('avaliação')) return { type: 'prova', status: 'pendente', tagClass: 'prova', tagText: 'Prova' };
+            if (title.includes('redação')) return { type: 'redacao', status: 'pendente', tagClass: 'redacao', tagText: 'Redação' };
+            if (task.expired) return { type: 'tarefa', status: 'expirada', tagClass: 'expirada', tagText: 'Expirada' };
+            return { type: 'tarefa', status: 'pendente', tagClass: 'pendente', tagText: 'Pendente' };
+        }
+
+        function populateFilters(rooms) {
+            roomFilter.innerHTML = '<option value="all">Todas as Turmas</option>';
+            if(rooms) {
+                rooms.forEach(room => { roomFilter.add(new Option(room.name, room.publication_target)); });
+            }
+        }
         
-        let globalApiData = null; // Para guardar os dados da API
+        function renderTasks() {
+            if (!globalApiData) return;
+            tasksList.innerHTML = '';
 
-        // --- FUNÇÕES AUXILIARES ---
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-        }
+            const filteredTasks = globalApiData.tarefas.filter(task => {
+                const typeInfo = getTaskType(task);
+                const roomMatch = currentFilters.room === 'all' || task.publication_target === currentFilters.room;
+                const statusMatch = currentFilters.status === 'all' || typeInfo.type === currentFilters.status || typeInfo.status === currentFilters.status;
+                return roomMatch && statusMatch;
+            });
 
-        function calculateDuration(start, end) {
-            const startDate = new Date(start);
-            const endDate = new Date(end);
-            const diffTime = Math.abs(endDate - startDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            return diffDays === 1 ? '1 dia' : `${diffDays} dias`;
-        }
-
-        // --- FUNÇÕES DE RENDERIZAÇÃO ---
-        function renderDashboard(data) {
-            const { userInfo, faltas, tarefas } = data;
-            
-            // Nome e Avatar
-            const primeiroNome = userInfo.NAME.split(' ')[0];
-            document.getElementById('user-name').textContent = primeiroNome;
-            const iniciais = userInfo.NAME.split(' ').map(n => n[0]).join('');
-            document.getElementById('user-avatar').textContent = iniciais.substring(0, 2).toUpperCase();
-
-            // Pendências e Faltas
-            document.getElementById('pendencias-count').textContent = tarefas.length;
-            document.getElementById('tarefa-sp-badge').textContent = tarefas.length;
-            document.getElementById('faltas-count').textContent = faltas[0].totalFaltasBimestre;
-
-            // Mostra o app e esconde o login
-            loginSection.style.display = 'none';
-            appContainer.style.display = 'block';
-            dashboardSection.style.display = 'block';
-            tasksSection.style.display = 'none';
-        }
-
-        function renderTasks(tasks) {
-            const tasksList = document.getElementById('tasks-list');
-            tasksList.innerHTML = ''; // Limpa a lista antes de adicionar
-
-            if(tasks.length === 0) {
-                tasksList.innerHTML = '<p>Você não tem nenhuma pendência. Parabéns!</p>';
+            if(filteredTasks.length === 0) {
+                tasksList.innerHTML = '<p style="text-align: center; color: var(--text-light);">Nenhuma atividade encontrada.</p>';
                 return;
             }
 
-            tasks.forEach(task => {
-                const taskCardHTML = `
+            filteredTasks.forEach(task => {
+                const typeInfo = getTaskType(task);
+                const cardHTML = `
                     <div class="task-card">
-                        <h3>${task.title}</h3>
+                        <div class="task-header"><h3>${task.title}</h3><span class="task-tag ${typeInfo.tagClass}">${typeInfo.tagText}</span></div>
                         <div class="task-details">
-                            <span><i data-feather="clock"></i> Duração: ${calculateDuration(task.start_date, task.end_date)}</span>
-                            <span><i data-feather="calendar"></i> Entrega: ${formatDate(task.end_date)}</span>
+                            <span><i data-feather="clock"></i>${calculateDuration(task.start_date, task.end_date)}</span>
+                            <span><i data-feather="calendar"></i>Entrega: ${formatDate(task.end_date)}</span>
                         </div>
                         <button class="task-button">Fazer Atividade</button>
-                    </div>
-                `;
-                tasksList.insertAdjacentHTML('beforeend', taskCardHTML);
+                    </div>`;
+                tasksList.insertAdjacentHTML('beforeend', cardHTML);
             });
-            
-            feather.replace(); // Reativa os ícones dentro dos cards criados
-            
-            // Mostra a tela de tarefas e esconde a dashboard
-            dashboardSection.style.display = 'none';
-            tasksSection.style.display = 'block';
+            feather.replace();
         }
 
-        // --- EVENT LISTENERS ---
+        function showDashboard() { dashboardSection.style.display = 'block'; tasksSection.style.display = 'none'; }
+        function showTasks() { renderTasks(); dashboardSection.style.display = 'none'; tasksSection.style.display = 'block'; }
+        
         loginForm.addEventListener('submit', async function(event) {
             event.preventDefault();
             const ra = document.getElementById('ra').value;
             const senha = document.getElementById('senha').value;
-            
             loginButton.disabled = true;
             loginButton.textContent = 'Carregando...';
             errorMessageDiv.textContent = '';
-
             try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user: ra, senha: senha }),
-                });
+                const response = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user: ra, senha: senha })});
                 const data = await response.json();
-                if (!response.ok) throw new Error(data.error);
+                if (!response.ok) throw new Error(data.error || 'Falha no login');
                 
-                globalApiData = data; // Salva os dados globalmente
-                renderDashboard(data); // Renderiza a dashboard inicial
+                globalApiData = data;
+                jsonOutput.textContent = JSON.stringify(data.tarefas, null, 2);
+                populateFilters(data.roomUserData ? data.roomUserData.rooms : []);
+                
+                const { userInfo, faltas, tarefas } = data;
+                document.getElementById('user-name').textContent = userInfo.NAME.split(' ')[0];
+                document.getElementById('user-avatar').textContent = userInfo.NAME.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                document.getElementById('pendencias-count').textContent = tarefas.length;
+                document.getElementById('faltas-count').textContent = faltas.length > 0 ? faltas[0].totalFaltasBimestre : 0;
 
+                loginSection.style.display = 'none';
+                appContainer.style.display = 'block';
+                showDashboard();
             } catch (error) {
                 errorMessageDiv.textContent = `Erro: ${error.message}`;
                 loginButton.disabled = false;
@@ -244,16 +249,14 @@
         });
 
         pendenciasCard.addEventListener('click', () => {
-            if (globalApiData && globalApiData.tarefas) {
-                renderTasks(globalApiData.tarefas);
-            }
+            currentFilters = { room: 'all', status: 'pendente' };
+            roomFilter.value = 'all';
+            statusFilter.value = 'pendente';
+            showTasks();
         });
-
-        backToDashboardBtn.addEventListener('click', () => {
-            tasksSection.style.display = 'none';
-            dashboardSection.style.display = 'block';
-        });
-
+        backToDashboardBtn.addEventListener('click', showDashboard);
+        roomFilter.addEventListener('change', (e) => { currentFilters.room = e.target.value; renderTasks(); });
+        statusFilter.addEventListener('change', (e) => { currentFilters.status = e.target.value; renderTasks(); });
     </script>
 </body>
 </html>
