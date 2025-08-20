@@ -12,8 +12,7 @@
             --primary-color: #007bff; --secondary-color: #f0f2f5; --text-color: #333;
             --light-text-color: #777; --background-color: #fff; --border-color: #ddd;
             --eclipse-brand-color: #4a148c; --eclipse-icon-color: #ffeb3b;
-            --green: #28a745; --red: #dc3545; --orange: #fd7e14; --grey: #6c757d;
-            --blue: #2196F3;
+            --green: #28a745; --red: #dc3545; --orange: #fd7e14; --grey: #6c757d; --blue: #007bff;
         }
         * { box-sizing: border-box; }
         body { font-family: 'Roboto', sans-serif; margin: 0; background-color: var(--secondary-color); color: var(--text-color); }
@@ -30,7 +29,6 @@
         .login-container p { color: var(--light-text-color); margin-bottom: 25px; }
         .profile-selection .profile-option { display: flex; justify-content: space-between; align-items: center; padding: 18px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; text-decoration: none; color: var(--text-color); transition: background-color 0.3s, border-color 0.3s; }
         .profile-option:hover { background-color: #f9f9f9; border-color: var(--primary-color); }
-        .profile-option small { font-size: 0.8rem; color: var(--light-text-color); margin-left: 8px; }
 
         /* Formulário */
         form { text-align: left; }
@@ -40,10 +38,6 @@
         .ra-digit-input, .uf-select { flex-basis: 80px; }
         .input-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; }
         .input-group input, .input-group select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
-        .password-wrapper { position: relative; }
-        .password-wrapper i { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); color: var(--light-text-color); cursor: pointer; }
-        .forgot-link { display: block; text-align: right; font-size: 0.85rem; margin-top: 8px; color: var(--light-text-color); text-decoration: none; }
-        .forgot-link strong { color: var(--primary-color); }
         .button-group { display: flex; gap: 10px; margin-top: 25px; }
         .button-group button { flex-grow: 1; padding: 14px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: opacity 0.3s; }
         .button-group button:hover { opacity: 0.9; }
@@ -64,7 +58,7 @@
         .sidebar.open { left: 0; }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 101; display: none; }
         .sidebar.open + .overlay { display: block; }
-        .menu-item { display: flex; align-items: center; gap: 15px; padding: 15px 20px; text-decoration: none; color: var(--text-color); font-weight: 500; }
+        .menu-item { display: flex; align-items: center; gap: 15px; padding: 15px 20px; text-decoration: none; color: var(--text-color); font-weight: 500; cursor: pointer; }
         .menu-item.active, .menu-item:hover { background-color: #eef7ff; color: var(--primary-color); border-right: 3px solid var(--primary-color); }
 
         .content { padding: 80px 15px 20px 15px; }
@@ -73,6 +67,7 @@
         .welcome-text p { margin: 0; color: var(--light-text-color); font-size: 0.9rem; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .stat-card { background-color: white; padding: 20px; border-radius: 12px; cursor: pointer; }
+        .stat-card h3 { margin: 0 0 5px 0; font-size: 2rem; }
         
         /* Tarefas */
         .page-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
@@ -85,26 +80,20 @@
         .task-tag { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; color: white; white-space: nowrap; }
         .task-tag.entregue { background-color: var(--green); } .task-tag.rascunho { background-color: var(--grey); } .task-tag.pendente { background-color: var(--orange); }
         .task-tag.expirada { background-color: var(--red); } .task-tag.prova { background-color: var(--primary-color); } .task-tag.redacao { background-color: var(--blue); }
-        .task-note { font-size: 16px; font-weight: 700; color: var(--primary-color); }
-        .task-button { width: 100%; padding: 12px; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; transition: all 0.2s; }
-        .task-button.do { background: var(--primary-color); color: white; }
+        .task-button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; transition: all 0.2s; margin-top: 15px; }
+        .task-button.do { background-color: var(--green); color: white; }
         .task-status { font-size: 12px; text-align: center; margin-top: 10px; min-height: 18px; font-weight: 500; }
-        .task-status.success { color: var(--green); } .task-status.error { color: var(--red); }
 
         /* Modal */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
-        .modal-content { background-color: #fefefe; margin: 40% auto; padding: 20px; border-radius: 12px; width: 90%; max-width: 400px; }
-        .modal-content h2 { margin-top: 0; }
-        .submit-type-selector { margin-top: 20px; text-align: center; font-size: 14px; display: flex; justify-content: center; gap: 20px; }
-        .time-inputs { display: flex; gap: 20px; margin: 20px 0; }
+        .modal-content { background-color: #fefefe; margin: 40% auto; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; }
     </style>
 </head>
 <body>
     <div id="login-screen" class="screen active">
         <div class="login-container">
             <div class="logo-container"><span class="logo-icon-eclipse">🌘</span><h1>Eclipsse</h1></div>
-            <h2>Olá, novamente!</h2>
-            <p>Já estávamos sentindo sua falta.</p>
+            <h2>Olá, novamente!</h2><p>Já estávamos sentindo sua falta.</p>
             <div class="profile-selection">
                 <a href="#" class="profile-option" onclick="showScreen('student-login-screen')"><span>Sou <strong>Estudante</strong></span><i class="fas fa-arrow-right"></i></a>
             </div>
@@ -114,8 +103,7 @@
     <div id="student-login-screen" class="screen">
         <div class="login-container">
             <div class="logo-container"><span class="logo-icon-eclipse">🌘</span><h1>Eclipsse</h1></div>
-            <h3>Estudante</h3>
-            <p>Preencha seus dados para acessar.</p>
+            <h3>Estudante</h3><p>Preencha seus dados para acessar.</p>
             <form id="loginForm">
                 <div class="input-group">
                     <div class="ra-container">
@@ -126,7 +114,7 @@
                 </div>
                 <div class="input-group">
                     <label for="password">Senha</label>
-                    <div class="password-wrapper"><input type="password" id="password" required><i class="fas fa-eye"></i></div>
+                    <input type="password" id="password" required>
                 </div>
                 <div class="button-group">
                     <button type="button" class="secondary" onclick="showScreen('login-screen')">Voltar</button>
@@ -141,16 +129,14 @@
         <header>
             <div class="header-left">
                 <button class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
-                 <div class="logo-dashboard">
-                    <span class="logo-icon-eclipse-sm">🌘</span><span id="header-title">Eclipsse</span>
-                </div>
+                 <div class="logo-dashboard"><span id="header-title">Eclipsse</span></div>
             </div>
             <div class="header-right"><div class="user-initials" id="header-avatar">--</div></div>
         </header>
 
         <div class="sidebar">
-            <a href="#" class="menu-item active" onclick="showPage('home-page', 'Eclipsse', this)"><i class="fas fa-home"></i> Home</a>
-            <a href="#" class="menu-item" onclick="showPage('task-page', 'Tarefa SP', this)"><i class="fas fa-tasks"></i> Tarefa SP</a>
+            <a href="#" class="menu-item active" data-target="home-page" data-title="Eclipsse"><i class="fas fa-home"></i> Home</a>
+            <a href="#" class="menu-item" data-target="task-page" data-title="Tarefa SP"><i class="fas fa-tasks"></i> Tarefa SP</a>
         </div>
         <div class="overlay" onclick="toggleMenu()"></div>
 
@@ -165,11 +151,11 @@
                     </div>
                 </div>
                 <div class="stats-grid">
-                    <div class="stat-card clickable" onclick="showPage('task-page', 'Tarefa SP')">
+                    <div class="stat-card clickable" onclick="showPage('task-page', 'Tarefa SP', document.querySelector('.menu-item[data-target=\'task-page\']'))">
                         <h3 id="pendencias-count">0</h3><p>Pendências</p>
                     </div>
                     <div class="stat-card">
-                        <h3 id="faltas-count">0</h3><p>Faltas</p><span>Sua presença é <strong>muito importante.</strong></span>
+                        <h3 id="faltas-count">0</h3><p>Faltas</p>
                     </div>
                 </div>
             </div>
@@ -181,21 +167,21 @@
     <div id="timer-modal" class="modal">
         <div class="modal-content">
             <h2>Configurar Realização</h2>
-            <div class="time-inputs">
-                <div><label for="min-time">Mínimo (min)</label><input type="number" id="min-time" value="2" min="1"></div>
-                <div><label for="max-time">Máximo (min)</label><input type="number" id="max-time" value="5" min="1"></div>
+            <div class="time-inputs" style="display:flex;gap:15px;">
+                <div><label>Mínimo (min)</label><input type="number" id="min-time" value="2" min="1" style="width:100%;"></div>
+                <div><label>Máximo (min)</label><input type="number" id="max-time" value="5" min="1" style="width:100%;"></div>
             </div>
-            <div class="submit-type-selector">
-                <label><input type="radio" name="submitType" value="draft" checked> Salvar como Rascunho</label>
+            <div class="submit-type-selector" style="margin-top:20px;">
+                <label><input type="radio" name="submitType" value="draft" checked> Salvar Rascunho</label>
                 <label><input type="radio" name="submitType" value="finished"> Enviar Tarefa</label>
             </div>
-            <div class="modal-actions">
+            <div class="button-group">
                 <button class="secondary" onclick="closeModal()">Cancelar</button>
                 <button class="primary" id="start-task-btn">Iniciar</button>
             </div>
         </div>
-                                                       </div>
-                                                           <script>
+    </div>
+        <script>
         // --- Variáveis Globais ---
         let globalApiData = null, deliveredTasksCache = null;
         let currentFilters = { room: 'all', status: 'pendente' };
@@ -223,18 +209,26 @@
         }
         function openModal(modalId) { document.getElementById(modalId).style.display = 'block'; }
         function closeModal() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
-
+        
         // --- Funções Auxiliares ---
-        function formatDuration(secondsStr) { /* ...código da função... */ }
-        function getTaskType(task) { /* ...código da função... */ }
+        function getTaskType(task) {
+            const statusInfo = { type: 'tarefa', status: 'pendente' };
+            const effectiveTask = { is_exam: task.is_exam ?? task.task_is_exam, is_essay: task.is_essay ?? task.task_is_essay, task_expired: task.task_expired ?? task.expired, };
+            if(task.answer_status === 'finished' || task.answer_status === 'submitted' || task.status === 'finished' || task.status === 'submitted') { statusInfo.status = 'entregue'; }
+            else if (task.answer_status === 'draft') { statusInfo.status = 'rascunho'; }
+            else if (effectiveTask.task_expired) { statusInfo.status = 'expirada'; }
+            if (effectiveTask.is_exam) statusInfo.type = 'prova'; else if (effectiveTask.is_essay) statusInfo.type = 'redacao';
+            statusInfo.tagClass = statusInfo.status !== 'pendente' ? statusInfo.status : statusInfo.type;
+            const typeName = statusInfo.type.charAt(0).toUpperCase() + statusInfo.type.slice(1);
+            statusInfo.tagText = typeName + (statusInfo.status === 'rascunho' ? ' (Rascunho)' : '');
+            return statusInfo;
+        }
 
         // --- Lógica Principal ---
         document.getElementById('loginForm').addEventListener('submit', async function(event) {
             event.preventDefault();
-            const ra = document.getElementById('ra').value;
-            const digit = document.getElementById('ra-digit').value;
-            const uf = document.getElementById('uf').value;
-            const password = document.getElementById('password').value;
+            const ra = document.getElementById('ra').value, digit = document.getElementById('ra-digit').value,
+                  uf = document.getElementById('uf').value, password = document.getElementById('password').value;
             const user = `${ra}${digit}${uf}`;
             
             const loginButton = document.getElementById('loginButton');
@@ -251,7 +245,6 @@
                 
                 globalApiData = data;
                 
-                // Popula a UI com os dados
                 const { userInfo, faltas, tarefas, roomUserData } = data;
                 const userInitials = userInfo.NAME.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
                 
@@ -260,11 +253,12 @@
                 document.getElementById('dash-avatar').textContent = userInitials;
                 document.getElementById('dash-user-name').textContent = `Olá, ${userInfo.NAME.split(' ')[0]}`;
                 document.getElementById('side-user-name').textContent = userInfo.NAME;
-
+                
                 const schoolRoom = roomUserData?.rooms?.find(r => r.meta?.nome_escola && r.meta.nome_escola !== "NULL");
                 document.getElementById('dash-school-name').textContent = schoolRoom ? schoolRoom.meta.nome_escola : 'Escola não identificada';
                 document.getElementById('side-school-name').textContent = schoolRoom ? schoolRoom.meta.nome_escola : '';
-
+                document.getElementById('dash-user-details').textContent = userInfo.SALA || '';
+                
                 document.getElementById('pendencias-count').textContent = tarefas.filter(t => ['pendente', 'rascunho'].includes(getTaskType(t).status)).length;
                 document.getElementById('faltas-count').textContent = faltas.length > 0 ? faltas[0].totalFaltasBimestre : 0;
                 
@@ -288,12 +282,19 @@
                         <option value="all">Todos</option><option value="pendente">A Fazer</option><option value="entregue">Entregues</option>
                     </select></div>
                 </div>
-                <div id="task-list"></div>
-            `;
-            populateFilters(globalApiData.roomUserData);
+                <div id="task-list"></div>`;
+            
+            const roomFilter = document.getElementById('room-filter');
+            const statusFilter = document.getElementById('status-filter');
+            
+            roomFilter.innerHTML = '<option value="all">Todas as Turmas</option>';
+            if (globalApiData.roomUserData && Array.isArray(globalApiData.roomUserData.rooms)) {
+                globalApiData.roomUserData.rooms.forEach(room => roomFilter.add(new Option(room.topic || room.name, room.name)));
+            }
+            
             renderTasks();
-            document.getElementById('room-filter').addEventListener('change', (e) => { currentFilters.room = e.target.value; renderTasks(); });
-            document.getElementById('status-filter').addEventListener('change', (e) => { currentFilters.status = e.target.value; renderTasks(); });
+            roomFilter.addEventListener('change', (e) => { currentFilters.room = e.target.value; renderTasks(); });
+            statusFilter.addEventListener('change', (e) => { currentFilters.status = e.target.value; renderTasks(); });
         }
 
         async function renderTasks() {
@@ -302,18 +303,21 @@
             tasksList.innerHTML = '<p>Carregando...</p>';
             let tasksToDisplay = [];
             // ... Toda a lógica de renderTasks que já tínhamos ...
+             tasksList.innerHTML = '<p style="text-align: center; color: var(--text-light);">Implementação pendente.</p>'; // Placeholder
         }
-        
-        document.getElementById('tasks-list').addEventListener('click', function(event) {
-            const button = event.target.closest('.task-button.do');
-            if (button) {
-                taskToDo.button = button;
-                taskToDo.taskId = button.dataset.taskId;
-                // ... resto da lógica para abrir o modal
-            }
+
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                showPage(this.dataset.target, this.dataset.title, this);
+            });
         });
 
-        // Cole aqui o resto das funções: getTaskType, doTask, etc. da versão anterior
+        // Event listener para o formulário de login já está acima
+        // Event listeners para os botões do modal de tempo
+        document.getElementById('start-task-btn').addEventListener('click', () => {
+             // Lógica para iniciar a tarefa com o tempo definido
+        });
+        document.getElementById('cancel-timer-btn').addEventListener('click', closeModal);
         
         feather.replace();
     </script>
