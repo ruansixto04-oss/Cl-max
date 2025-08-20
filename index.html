@@ -27,7 +27,7 @@
         .login-container h2 { font-size: 1.8rem; margin-bottom: 8px; }
         .login-container h3 { font-size: 1.5rem; font-weight: 500; margin-bottom: 8px; }
         .login-container p { color: var(--light-text-color); margin-bottom: 25px; }
-        .profile-selection .profile-option { display: flex; justify-content: space-between; align-items: center; padding: 18px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; text-decoration: none; color: var(--text-color); transition: background-color 0.3s, border-color 0.3s; }
+        .profile-selection .profile-option { display: flex; justify-content: space-between; align-items: center; padding: 18px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; text-decoration: none; color: var(--text-color); transition: background-color 0.3s, border-color 0.3s; cursor: pointer; }
         .profile-option:hover { background-color: #f9f9f9; border-color: var(--primary-color); }
 
         /* Formulário */
@@ -58,7 +58,7 @@
         .sidebar.open { left: 0; }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 101; display: none; }
         .sidebar.open + .overlay { display: block; }
-        .menu-item { display: flex; align-items: center; gap: 15px; padding: 15px 20px; text-decoration: none; color: var(--text-color); font-weight: 500; cursor: pointer; }
+        .menu-item { display: flex; align-items: center; gap: 15px; padding: 15px 20px; text-decoration: none; color: var(--text-color); font-weight: 500; cursor: pointer;}
         .menu-item.active, .menu-item:hover { background-color: #eef7ff; color: var(--primary-color); border-right: 3px solid var(--primary-color); }
 
         .content { padding: 80px 15px 20px 15px; }
@@ -87,6 +87,9 @@
         /* Modal */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
         .modal-content { background-color: #fefefe; margin: 40% auto; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; }
+        .modal-content h2 { margin-top: 0; }
+        .submit-type-selector { margin-top: 20px; text-align: center; font-size: 14px; display: flex; justify-content: center; gap: 20px; }
+        .time-inputs { display: flex; gap: 15px; margin: 20px 0; }
     </style>
 </head>
 <body>
@@ -95,7 +98,7 @@
             <div class="logo-container"><span class="logo-icon-eclipse">🌘</span><h1>Eclipsse</h1></div>
             <h2>Olá, novamente!</h2><p>Já estávamos sentindo sua falta.</p>
             <div class="profile-selection">
-                <a href="#" class="profile-option" onclick="showScreen('student-login-screen')"><span>Sou <strong>Estudante</strong></span><i class="fas fa-arrow-right"></i></a>
+                <a class="profile-option" onclick="showScreen('student-login-screen')"><span>Sou <strong>Estudante</strong></span><i class="fas fa-arrow-right"></i></a>
             </div>
         </div>
     </div>
@@ -167,11 +170,11 @@
     <div id="timer-modal" class="modal">
         <div class="modal-content">
             <h2>Configurar Realização</h2>
-            <div class="time-inputs" style="display:flex;gap:15px;">
+            <div class="time-inputs">
                 <div><label>Mínimo (min)</label><input type="number" id="min-time" value="2" min="1" style="width:100%;"></div>
                 <div><label>Máximo (min)</label><input type="number" id="max-time" value="5" min="1" style="width:100%;"></div>
             </div>
-            <div class="submit-type-selector" style="margin-top:20px;">
+            <div class="submit-type-selector">
                 <label><input type="radio" name="submitType" value="draft" checked> Salvar Rascunho</label>
                 <label><input type="radio" name="submitType" value="finished"> Enviar Tarefa</label>
             </div>
@@ -205,18 +208,32 @@
                 document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
                 element.classList.add('active');
             }
-            toggleMenu();
+            if (document.querySelector('.sidebar').classList.contains('open')) {
+                toggleMenu();
+            }
         }
         function openModal(modalId) { document.getElementById(modalId).style.display = 'block'; }
         function closeModal() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
         
         // --- Funções Auxiliares ---
+        function formatDuration(secondsStr) {
+            if (!secondsStr) return '-';
+            const totalSeconds = parseFloat(secondsStr);
+            if (isNaN(totalSeconds) || totalSeconds < 1) return '-';
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = Math.floor(totalSeconds % 60);
+            return `${minutes} min ${seconds} s`;
+        }
         function getTaskType(task) {
             const statusInfo = { type: 'tarefa', status: 'pendente' };
             const effectiveTask = { is_exam: task.is_exam ?? task.task_is_exam, is_essay: task.is_essay ?? task.task_is_essay, task_expired: task.task_expired ?? task.expired, };
-            if(task.answer_status === 'finished' || task.answer_status === 'submitted' || task.status === 'finished' || task.status === 'submitted') { statusInfo.status = 'entregue'; }
-            else if (task.answer_status === 'draft') { statusInfo.status = 'rascunho'; }
-            else if (effectiveTask.task_expired) { statusInfo.status = 'expirada'; }
+            if(task.answer_status === 'finished' || task.answer_status === 'submitted' || task.status === 'finished' || task.status === 'submitted') {
+                statusInfo.status = 'entregue';
+            } else if (task.answer_status === 'draft') {
+                statusInfo.status = 'rascunho';
+            } else if (effectiveTask.task_expired) {
+                statusInfo.status = 'expirada';
+            }
             if (effectiveTask.is_exam) statusInfo.type = 'prova'; else if (effectiveTask.is_essay) statusInfo.type = 'redacao';
             statusInfo.tagClass = statusInfo.status !== 'pendente' ? statusInfo.status : statusInfo.type;
             const typeName = statusInfo.type.charAt(0).toUpperCase() + statusInfo.type.slice(1);
@@ -227,8 +244,10 @@
         // --- Lógica Principal ---
         document.getElementById('loginForm').addEventListener('submit', async function(event) {
             event.preventDefault();
-            const ra = document.getElementById('ra').value, digit = document.getElementById('ra-digit').value,
-                  uf = document.getElementById('uf').value, password = document.getElementById('password').value;
+            const ra = document.getElementById('ra').value;
+            const digit = document.getElementById('ra-digit').value;
+            const uf = document.getElementById('uf').value;
+            const password = document.getElementById('password').value;
             const user = `${ra}${digit}${uf}`;
             
             const loginButton = document.getElementById('loginButton');
@@ -253,7 +272,7 @@
                 document.getElementById('dash-avatar').textContent = userInitials;
                 document.getElementById('dash-user-name').textContent = `Olá, ${userInfo.NAME.split(' ')[0]}`;
                 document.getElementById('side-user-name').textContent = userInfo.NAME;
-                
+
                 const schoolRoom = roomUserData?.rooms?.find(r => r.meta?.nome_escola && r.meta.nome_escola !== "NULL");
                 document.getElementById('dash-school-name').textContent = schoolRoom ? schoolRoom.meta.nome_escola : 'Escola não identificada';
                 document.getElementById('side-school-name').textContent = schoolRoom ? schoolRoom.meta.nome_escola : '';
@@ -295,6 +314,13 @@
             renderTasks();
             roomFilter.addEventListener('change', (e) => { currentFilters.room = e.target.value; renderTasks(); });
             statusFilter.addEventListener('change', (e) => { currentFilters.status = e.target.value; renderTasks(); });
+            document.getElementById('task-list').addEventListener('click', function(event) {
+                const button = event.target.closest('.task-button.do');
+                if (button) {
+                    taskToDo = { button, taskId: button.dataset.taskId, roomId: button.dataset.roomId, answerId: button.dataset.answerId };
+                    openModal('timer-modal');
+                }
+            });
         }
 
         async function renderTasks() {
@@ -302,8 +328,113 @@
             if (!globalApiData || !tasksList) return;
             tasksList.innerHTML = '<p>Carregando...</p>';
             let tasksToDisplay = [];
-            // ... Toda a lógica de renderTasks que já tínhamos ...
-             tasksList.innerHTML = '<p style="text-align: center; color: var(--text-light);">Implementação pendente.</p>'; // Placeholder
+            try {
+                if (currentFilters.status === 'entregue') {
+                    if (!deliveredTasksCache) {
+                        const targets = globalApiData.roomUserData.rooms.map(r => r.name);
+                        const response = await fetch('/api/get-delivered-tasks', {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ tokenB: globalApiData.tokenB, nick: globalApiData.userInfo.EDUSP_NICK, publicationTargets: targets })
+                        });
+                        const data = await response.json();
+                        if (!response.ok) throw new Error(data.error || "Falha na API de tarefas entregues");
+                        deliveredTasksCache = data;
+                    }
+                    tasksToDisplay = deliveredTasksCache;
+                } else { tasksToDisplay = globalApiData.tarefas; }
+
+                tasksList.innerHTML = '';
+                const filteredTasks = tasksToDisplay.filter(task => {
+                    const typeInfo = getTaskType(task);
+                    const effectiveTask = { publication_target: task.publication_target ?? task.task_publication_target };
+                    const roomMatch = currentFilters.room === 'all' || effectiveTask.publication_target === currentFilters.room;
+                    const statusMatch = currentFilters.status === 'all' || typeInfo.status === currentFilters.status;
+                    return roomMatch && statusMatch;
+                });
+
+                if(filteredTasks.length === 0) {
+                    tasksList.innerHTML = '<div style="text-align:center; padding: 40px; background: white; border-radius: 12px;"><p>Nenhuma atividade encontrada.</p></div>';
+                } else {
+                     filteredTasks.forEach(task => {
+                        const typeInfo = getTaskType(task);
+                        const effectiveTask = {
+                            title: task.title ?? task.task_title, author: task.author ?? task.task_author, expire_at: task.expire_at ?? task.task_expire_at,
+                            id: task.id ?? task.task_id, publication_target: task.publication_target ?? task.task_publication_target,
+                            answer_id: task.answer_id ?? null, question_count: task.question_count ?? task.task_question_count, duration: task.duration ?? "0.00"
+                        };
+                        let bottomContent = '';
+                        if (typeInfo.status === 'rascunho') {
+                            bottomContent = `<div class="task-note" style="color: var(--orange);">Aviso: Finalize no app oficial.</div>`;
+                        } else if(typeInfo.status === 'entregue') {
+                            bottomContent = `<div class="task-note">Nota: ${task.result_score !== null ? parseFloat(task.result_score).toFixed(1) : 'Aguardando correção'}</div>`;
+                        } else {
+                            bottomContent = `<button class="task-button do" data-task-id="${effectiveTask.id}" data-room-id="${effectiveTask.publication_target}" data-answer-id="${effectiveTask.answer_id || ''}">Fazer Atividade</button>
+                                             <div class="task-status"></div>`;
+                        }
+                        const cardHTML = `<div class="task-card">
+                            <div style="display: flex; justify-content: space-between;">
+                                <h3>${effectiveTask.title}</h3>
+                                <span class="task-tag ${typeInfo.tagClass}">${typeInfo.tagText}</span>
+                            </div>
+                            <div style="font-size: 12px; color: #777; margin-top: 5px;">Autor: ${effectiveTask.author.split('-')[0]}</div>
+                            ${bottomContent}
+                        </div>`;
+                        tasksList.insertAdjacentHTML('beforeend', cardHTML);
+                    });
+                }
+                feather.replace();
+            } catch (error) {
+                tasksList.innerHTML = `<p style="text-align: center; color: var(--red);">Erro: ${error.message}</p>`;
+            }
+        }
+        
+        async function doTask(minMinutes, maxMinutes) {
+            const { button, taskId, roomId, submitType, answerId } = taskToDo;
+            const card = button.closest('.task-card'), statusDiv = card.querySelector('.task-status');
+            let finalAnswerId = answerId;
+            let intervalId;
+            try {
+                button.disabled = true; button.className = 'task-button doing';
+                statusDiv.className = 'task-status';
+                
+                if (!finalAnswerId) {
+                    button.textContent = 'Iniciando...'; statusDiv.textContent = 'Criando rascunho...';
+                    const startResponse = await fetch('/api/start-task', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ taskId, tokenB: globalApiData.tokenB, room: roomId }) });
+                    const startData = await startResponse.json();
+                    if (!startResponse.ok) throw new Error(startData.error || 'Falha ao iniciar.');
+                    finalAnswerId = startData.id;
+                }
+                button.textContent = 'Buscando Respostas...'; statusDiv.textContent = 'Buscando respostas...';
+                const answersResponse = await fetch('/api/get-answers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ taskId, tokenB: globalApiData.tokenB, room: roomId }) });
+                const answersText = await answersResponse.text();
+                let answersData;
+                try { answersData = JSON.parse(answersText); } catch(e) { throw new Error("API de respostas offline."); }
+                if (!answersResponse.ok) throw new Error(answersData.error || 'Falha ao buscar respostas.');
+                
+                const waitTimeMs = (Math.random() * (maxMinutes - minMinutes) + minMinutes) * 60000;
+                const endTime = Date.now() + waitTimeMs;
+                statusDiv.textContent = 'Aguardando tempo...';
+                intervalId = setInterval(() => {
+                    const timeLeft = Math.round((endTime - Date.now()) / 1000);
+                    if (timeLeft <= 0) { clearInterval(intervalId); button.textContent = 'Enviando...'; } 
+                    else { const m = Math.floor(timeLeft / 60), s = timeLeft % 60; button.textContent = `Aguardando ${m}:${s.toString().padStart(2, '0')}`; }
+                }, 1000);
+                await new Promise(resolve => setTimeout(resolve, waitTimeMs));
+                
+                statusDiv.textContent = submitType === 'draft' ? 'Salvando...' : 'Enviando...';
+                const submitResponse = await fetch('/api/submit-task', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ taskId, tokenB: globalApiData.tokenB, payload: answersData, answerId: finalAnswerId, submitType }) });
+                if (!submitResponse.ok) { const errData = await submitResponse.json(); throw new Error(errData.details?.message || errData.error || 'Falha ao enviar.'); }
+                
+                button.className = 'task-button done'; button.textContent = submitType === 'draft' ? 'Salvo!' : 'Enviado!';
+                statusDiv.className = 'task-status success'; statusDiv.textContent = `Sucesso!`;
+                deliveredTasksCache = null;
+                globalApiData.tarefas = globalApiData.tarefas.filter(t => t.id !== Number(taskId));
+                renderTasks();
+            } catch (error) {
+                button.disabled = false; button.className = 'task-button do'; button.textContent = 'Tentar Novamente';
+                statusDiv.className = 'task-status error'; statusDiv.textContent = `Erro: ${error.message}`;
+                if(intervalId) clearInterval(intervalId);
+            }
         }
 
         document.querySelectorAll('.menu-item').forEach(item => {
@@ -311,14 +442,15 @@
                 showPage(this.dataset.target, this.dataset.title, this);
             });
         });
-
-        // Event listener para o formulário de login já está acima
-        // Event listeners para os botões do modal de tempo
         document.getElementById('start-task-btn').addEventListener('click', () => {
-             // Lógica para iniciar a tarefa com o tempo definido
+            const min = parseFloat(document.getElementById('min-time').value) || 2;
+            const max = parseFloat(document.getElementById('max-time').value) || 5;
+            taskToDo.submitType = document.querySelector('input[name="submitType"]:checked').value;
+            closeModal();
+            doTask(min, max);
         });
-        document.getElementById('cancel-timer-btn').addEventListener('click', closeModal);
-        
+        document.querySelector('.modal .secondary').addEventListener('click', closeModal);
+
         feather.replace();
     </script>
 </body>
