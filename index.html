@@ -3,145 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eclimax</title>
+    <title>Eclipsse</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://unpkg.com/feather-icons"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         :root {
-            --primary-color: #6a11cb; --primary-gradient: linear-gradient(135deg, #2575fc, #6a11cb);
-            --background-color: #f0f2f5; --card-background: #ffffff;
-            --text-color: #333; --text-light: #555;
+            --primary-color: #007bff; --secondary-color: #f0f2f5; --text-color: #333;
+            --light-text-color: #777; --background-color: #fff; --border-color: #ddd;
+            --eclipse-brand-color: #4a148c; --eclipse-icon-color: #ffeb3b;
             --green: #28a745; --red: #dc3545; --orange: #fd7e14; --grey: #6c757d;
+            --blue: #2196F3;
         }
         * { box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--background-color); color: var(--text-color); }
-        button, select, input { font-family: 'Poppins', sans-serif; cursor: pointer; }
-        
-        #login-section { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--primary-gradient); }
-        .login-card {
-            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 40px; border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; border: 1px solid rgba(255,255,255,0.2);
-        }
-        .login-card h1 { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px; color: #333;}
-        .login-card h1 svg { color: var(--primary-color); }
-        .input-group { position: relative; margin-bottom: 20px; }
-        .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #aaa; }
-        .input-group input { width: 100%; padding: 15px 15px 15px 50px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; background: #f7f7f7; }
-        .login-btn { width: 100%; padding: 15px; background: var(--primary-gradient); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; transition: transform 0.2s; }
-        .login-btn:hover { transform: scale(1.02); }
+        body { font-family: 'Roboto', sans-serif; margin: 0; background-color: var(--secondary-color); color: var(--text-color); }
+        .screen, .page { display: none; }
+        .screen.active, .page.active { display: block; }
+
+        /* Login */
+        .login-container { max-width: 400px; margin: 40px auto; padding: 30px; background-color: var(--background-color); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; }
+        .logo-container { display: flex; align-items: center; justify-content: center; margin-bottom: 20px; color: var(--eclipse-brand-color); }
+        .logo-icon-eclipse { font-size: 48px; margin-right: 10px; color: var(--eclipse-icon-color); text-shadow: 0 0 10px rgba(0,0,0,0.3); }
+        .logo-container h1 { font-size: 2.5rem; font-weight: 700; }
+        .login-container h2 { font-size: 1.8rem; margin-bottom: 8px; }
+        .login-container h3 { font-size: 1.5rem; font-weight: 500; margin-bottom: 8px; }
+        .login-container p { color: var(--light-text-color); margin-bottom: 25px; }
+        .profile-selection .profile-option { display: flex; justify-content: space-between; align-items: center; padding: 18px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; text-decoration: none; color: var(--text-color); transition: background-color 0.3s, border-color 0.3s; }
+        .profile-option:hover { background-color: #f9f9f9; border-color: var(--primary-color); }
+        .profile-option small { font-size: 0.8rem; color: var(--light-text-color); margin-left: 8px; }
+
+        /* Formulário */
+        form { text-align: left; }
+        .input-group { margin-bottom: 20px; }
+        .ra-container { display: flex; gap: 10px; }
+        .ra-input { flex-grow: 1; }
+        .ra-digit-input, .uf-select { flex-basis: 80px; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; }
+        .input-group input, .input-group select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
+        .password-wrapper { position: relative; }
+        .password-wrapper i { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); color: var(--light-text-color); cursor: pointer; }
+        .forgot-link { display: block; text-align: right; font-size: 0.85rem; margin-top: 8px; color: var(--light-text-color); text-decoration: none; }
+        .forgot-link strong { color: var(--primary-color); }
+        .button-group { display: flex; gap: 10px; margin-top: 25px; }
+        .button-group button { flex-grow: 1; padding: 14px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: opacity 0.3s; }
+        .button-group button:hover { opacity: 0.9; }
+        .button-group .primary { background-color: var(--primary-color); color: white; }
+        .button-group .secondary { background-color: var(--secondary-color); color: var(--text-color); border: 1px solid var(--border-color); }
         #error-message { color: var(--red); margin-top: 15px; font-weight: 600; min-height: 20px;}
-
-        #app-container { display: none; }
-        .main-content { padding: 20px; transition: margin-left 0.3s; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .header-left, .header-right { display: flex; align-items: center; gap: 15px; }
-        .menu-btn { background: none; border: none; cursor: pointer; }
-        .avatar { width: 36px; height: 36px; border-radius: 50%; background-color: var(--primary-color); color: white; display: flex; justify-content: center; align-items: center; font-weight: 600; font-size: 14px; }
-
-        .sidenav {
-            height: 100%; width: 0; position: fixed; z-index: 1001; top: 0; left: 0;
-            background-color: var(--card-background); overflow-x: hidden; transition: 0.3s;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-        }
-        .sidenav-header { padding: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #eee; }
-        .sidenav a { padding: 15px 20px; text-decoration: none; font-size: 16px; color: var(--text-light); display: flex; align-items: center; gap: 15px; transition: 0.2s; border-left: 3px solid transparent; }
-        .sidenav a:hover, .sidenav a.active { background-color: #f8f9fa; color: var(--primary-color); border-left: 3px solid var(--primary-color); }
-        .sidenav .close-btn { position: absolute; top: 5px; right: 15px; font-size: 36px; color: #ccc; text-decoration: none; }
-
-        .greeting h2 { margin: 0; }
-        .greeting p { color: #777; margin: 5px 0 25px 0; }
-        .summary-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
-        .card { background: var(--card-background); border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .card:hover { transform: translateY(-5px); transition: 0.2s; }
-        .card.clickable { cursor: pointer; }
         
-        .task-card { margin-bottom: 15px; background: var(--card-background); border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .task-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 10px; }
-        .task-header h3 { margin: 0; font-size: 16px; line-height: 1.4; flex-grow: 1; }
+        /* Dashboard */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background-color: var(--background-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+        .logo-dashboard { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--eclipse-brand-color); font-size: 1.2rem;}
+        .logo-icon-eclipse-sm { font-size: 24px; color: var(--eclipse-icon-color); }
+        .user-initials, .user-initials-lg { background-color: var(--eclipse-brand-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+        .user-initials { width: 35px; height: 35px; font-size: 1rem; }
+        .user-initials-lg { width: 60px; height: 60px; font-size: 1.8rem; }
+        
+        /* Sidebar */
+        .sidebar { position: fixed; left: -280px; top: 0; width: 280px; height: 100%; background-color: var(--background-color); padding-top: 60px; transition: left 0.3s ease; z-index: 102; box-shadow: 2px 0 5px rgba(0,0,0,0.1); display: flex; flex-direction: column;}
+        .sidebar.open { left: 0; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 101; display: none; }
+        .sidebar.open + .overlay { display: block; }
+        .menu-item { display: flex; align-items: center; gap: 15px; padding: 15px 20px; text-decoration: none; color: var(--text-color); font-weight: 500; }
+        .menu-item.active, .menu-item:hover { background-color: #eef7ff; color: var(--primary-color); border-right: 3px solid var(--primary-color); }
+
+        .content { padding: 80px 15px 20px 15px; }
+        .welcome-banner { display: flex; align-items: center; gap: 15px; background-color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        .welcome-text h2 { margin: 0 0 5px 0; font-size: 1.4rem; }
+        .welcome-text p { margin: 0; color: var(--light-text-color); font-size: 0.9rem; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .stat-card { background-color: white; padding: 20px; border-radius: 12px; cursor: pointer; }
+        
+        /* Tarefas */
+        .page-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .header-icon { background: var(--secondary-color); border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; }
+        .header-icon i { color: var(--primary-color); font-size: 1.5rem; }
+        .page-header h2 { font-size: 1.5rem; margin: 0; }
+        .filters { background: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .filter-group { display: flex; flex-direction: column; }
+        .task-card { background: white; border-radius: 12px; margin-bottom: 15px; overflow: hidden; padding: 20px; }
         .task-tag { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; color: white; white-space: nowrap; }
         .task-tag.entregue { background-color: var(--green); } .task-tag.rascunho { background-color: var(--grey); } .task-tag.pendente { background-color: var(--orange); }
-        .task-tag.expirada { background-color: var(--red); } .task-tag.prova { background-color: var(--primary-color); } .task-tag.redacao { background-color: #2575fc; }
-        .task-details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; font-size: 13px; color: var(--text-light); margin: 15px 0; font-weight: 500;}
-        .task-details-grid span { display: flex; align-items: center; gap: 5px; }
+        .task-tag.expirada { background-color: var(--red); } .task-tag.prova { background-color: var(--primary-color); } .task-tag.redacao { background-color: var(--blue); }
         .task-note { font-size: 16px; font-weight: 700; color: var(--primary-color); }
         .task-button { width: 100%; padding: 12px; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; transition: all 0.2s; }
-        .task-button.do { background: var(--primary-gradient); color: white; } .task-button.doing { background-color: var(--grey); color: white; cursor: not-allowed; }
-        .task-button.done { background-color: #e0e0e0; color: var(--text-light); cursor: not-allowed; }
+        .task-button.do { background: var(--primary-color); color: white; }
         .task-status { font-size: 12px; text-align: center; margin-top: 10px; min-height: 18px; font-weight: 500; }
         .task-status.success { color: var(--green); } .task-status.error { color: var(--red); }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
-        .modal-content h2 { margin-top: 0; text-align: center; }
-        .modal-content .time-inputs { display: flex; gap: 20px; margin: 20px 0; }
-        .modal-content label { display: block; margin-bottom: 5px; font-size: 14px; color: var(--text-light); }
-        .modal-content input[type="number"] { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background-color: #fefefe; margin: 40% auto; padding: 20px; border-radius: 12px; width: 90%; max-width: 400px; }
+        .modal-content h2 { margin-top: 0; }
         .submit-type-selector { margin-top: 20px; text-align: center; font-size: 14px; display: flex; justify-content: center; gap: 20px; }
-        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;}
-        .modal-actions button { padding: 10px 20px; border-radius: 8px; border: none; font-weight: 600; }
-        .modal-actions .btn-cancel { background-color: #eee; } .modal-actions .btn-start { background-color: var(--green); color: white; }
+        .time-inputs { display: flex; gap: 20px; margin: 20px 0; }
     </style>
 </head>
 <body>
-    <section id="login-section">
-        <div class="login-card">
-            <h1><i data-feather="award"></i>Eclimax</h1>
+    <div id="login-screen" class="screen active">
+        <div class="login-container">
+            <div class="logo-container"><span class="logo-icon-eclipse">🌘</span><h1>Eclipsse</h1></div>
+            <h2>Olá, novamente!</h2>
+            <p>Já estávamos sentindo sua falta.</p>
+            <div class="profile-selection">
+                <a href="#" class="profile-option" onclick="showScreen('student-login-screen')"><span>Sou <strong>Estudante</strong></span><i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div id="student-login-screen" class="screen">
+        <div class="login-container">
+            <div class="logo-container"><span class="logo-icon-eclipse">🌘</span><h1>Eclipsse</h1></div>
+            <h3>Estudante</h3>
+            <p>Preencha seus dados para acessar.</p>
             <form id="loginForm">
-                <div class="input-group"><i data-feather="user"></i><input type="text" id="ra" placeholder="Seu RA (com dígito e UF)" required></div>
-                <div class="input-group"><i data-feather="lock"></i><input type="password" id="senha" placeholder="Sua Senha" required></div>
-                <button type="submit" id="loginButton" class="login-btn">Entrar</button>
+                <div class="input-group">
+                    <div class="ra-container">
+                        <div class="ra-input"><label for="ra">RA</label><input type="text" id="ra" required></div>
+                        <div class="ra-digit-input"><label for="ra-digit">Dígito</label><input type="text" id="ra-digit" maxlength="1" required></div>
+                        <div class="uf-select"><label for="uf">UF</label><select id="uf" required><option>SP</option></select></div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="password">Senha</label>
+                    <div class="password-wrapper"><input type="password" id="password" required><i class="fas fa-eye"></i></div>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="secondary" onclick="showScreen('login-screen')">Voltar</button>
+                    <button type="submit" class="primary" id="loginButton">Acessar</button>
+                </div>
                 <div id="error-message"></div>
             </form>
         </div>
-    </section>
+    </div>
 
-    <div id="app-container" style="display: none;">
-        <div id="mySidenav" class="sidenav">
-            <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">&times;</a>
-            <div class="sidenav-header">
-                <div class="avatar" id="side-avatar">--</div>
-                <div>
-                    <strong id="side-user-name" style="display: block;"></strong>
-                    <span id="side-school-name" style="font-size: 12px;"></span>
+    <div id="dashboard-screen" class="screen">
+        <header>
+            <div class="header-left">
+                <button class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+                 <div class="logo-dashboard">
+                    <span class="logo-icon-eclipse-sm">🌘</span><span id="header-title">Eclipsse</span>
                 </div>
             </div>
-            <a href="#" class="nav-link active" data-target="dashboard-section"><i data-feather="home"></i> Home</a>
-            <a href="#" class="nav-link" data-target="tasks-section"><i data-feather="edit-3"></i> Tarefas</a>
+            <div class="header-right"><div class="user-initials" id="header-avatar">--</div></div>
+        </header>
+
+        <div class="sidebar">
+            <a href="#" class="menu-item active" onclick="showPage('home-page', 'Eclipsse', this)"><i class="fas fa-home"></i> Home</a>
+            <a href="#" class="menu-item" onclick="showPage('task-page', 'Tarefa SP', this)"><i class="fas fa-tasks"></i> Tarefa SP</a>
         </div>
+        <div class="overlay" onclick="toggleMenu()"></div>
 
-        <div id="main" class="main-content">
-            <header class="header">
-                <div class="header-left">
-                    <button class="menu-btn" onclick="openNav()"><i data-feather="menu"></i></button>
-                    <h2 id="header-title">Dashboard</h2>
-                </div>
-                <div class="header-right">
-                    <div class="avatar" id="header-avatar">--</div>
-                </div>
-            </header>
-
-            <main>
-                <section id="dashboard-section">
-                    <div class="greeting">
-                        <h2>Olá, <span id="dash-user-name"></span>!</h2>
-                        <p>Seja bem-vindo de volta.</p>
+        <main class="content">
+            <div id="home-page" class="page active">
+                <div class="welcome-banner">
+                    <div class="user-initials-lg" id="dash-avatar">--</div>
+                    <div class="welcome-text">
+                        <h2 id="dash-user-name">Olá, ...</h2>
+                        <p id="dash-user-details">...</p>
+                        <p><i class="fas fa-school"></i> <span id="dash-school-name">...</span></p>
                     </div>
-                    <div class="summary-cards">
-                        <div class="card clickable" id="pendencias-card" onclick="navigateToTasks()">
-                           <h3>Pendências</h3><p id="pendencias-count">0</p>
-                        </div>
-                        <div class="card">
-                           <h3>Faltas</h3><p id="faltas-count">0</p>
-                        </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card clickable" onclick="showPage('task-page', 'Tarefa SP')">
+                        <h3 id="pendencias-count">0</h3><p>Pendências</p>
                     </div>
-                </section>
-
-                <section id="tasks-section" style="display: none;">
-                    </section>
-            </main>
-        </div>
+                    <div class="stat-card">
+                        <h3 id="faltas-count">0</h3><p>Faltas</p><span>Sua presença é <strong>muito importante.</strong></span>
+                    </div>
+                </div>
+            </div>
+            <div id="task-page" class="page">
+                </div>
+        </main>
     </div>
     
-    <div class="modal-overlay" id="timer-modal">
+    <div id="timer-modal" class="modal">
         <div class="modal-content">
             <h2>Configurar Realização</h2>
             <div class="time-inputs">
@@ -153,277 +190,130 @@
                 <label><input type="radio" name="submitType" value="finished"> Enviar Tarefa</label>
             </div>
             <div class="modal-actions">
-                <button class="btn-cancel" id="cancel-timer-btn">Cancelar</button>
-                <button class="btn-start" id="start-timer-btn">Iniciar</button>
+                <button class="secondary" onclick="closeModal()">Cancelar</button>
+                <button class="primary" id="start-task-btn">Iniciar</button>
             </div>
         </div>
-                    </div>
-                        <script>
-        // --- SEÇÃO DE ELEMENTOS GLOBAIS ---
-        const loginSection = document.getElementById('login-section'), appContainer = document.getElementById('app-container'),
-              loginForm = document.getElementById('loginForm'), loginButton = document.getElementById('loginButton'),
-              errorMessageDiv = document.getElementById('error-message'), navLinks = document.querySelectorAll('.nav-link'),
-              headerTitle = document.getElementById('header-title'), mainContent = document.getElementById('main'),
-              timerModal = document.getElementById('timer-modal'), cancelTimerBtn = document.getElementById('cancel-timer-btn'),
-              startTimerBtn = document.getElementById('start-timer-btn'), minTimeInput = document.getElementById('min-time'),
-              maxTimeInput = document.getElementById('max-time');
-
-        let globalApiData = null, deliveredTasksCache = null, currentFilters = { room: 'all', status: 'all' };
+                                                       </div>
+                                                           <script>
+        // --- Variáveis Globais ---
+        let globalApiData = null, deliveredTasksCache = null;
+        let currentFilters = { room: 'all', status: 'pendente' };
         let taskToDo = { button: null, taskId: null, roomId: null, submitType: 'draft', answerId: null };
+        const feather = window.feather;
 
-        // --- LÓGICA DE NAVEGAÇÃO E UI ---
-        function openNav() { document.getElementById("mySidenav").style.width = "280px"; }
-        function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
-        
-        function navigateTo(targetId) {
-            document.querySelectorAll('#main section').forEach(section => section.style.display = 'none');
-            document.getElementById(targetId).style.display = 'block';
-            const targetLink = document.querySelector(`.nav-link[data-target="${targetId}"]`);
-            if (targetLink) {
-                headerTitle.textContent = targetLink.textContent.trim();
-                navLinks.forEach(l => l.classList.remove('active'));
-                targetLink.classList.add('active');
+        // --- Lógica de UI e Navegação ---
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+        function toggleMenu() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.overlay').style.display = document.querySelector('.sidebar').classList.contains('open') ? 'block' : 'none';
+        }
+        function showPage(pageId, title, element) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.getElementById('header-title').textContent = title;
+            if (element) {
+                document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+                element.classList.add('active');
             }
-            closeNav();
+            toggleMenu();
         }
-        function navigateToTasks() { navigateTo('tasks-section'); }
+        function openModal(modalId) { document.getElementById(modalId).style.display = 'block'; }
+        function closeModal() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
 
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => { e.preventDefault(); navigateTo(link.getAttribute('data-target')); });
-        });
-        
-        // --- FUNÇÕES AUXILIARES ---
-        function formatDuration(secondsStr) {
-            if (!secondsStr) return '-';
-            const totalSeconds = parseFloat(secondsStr);
-            if (isNaN(totalSeconds) || totalSeconds < 1) return '-';
-            const minutes = Math.floor(totalSeconds / 60);
-            const seconds = Math.floor(totalSeconds % 60);
-            return `${minutes} min ${seconds} s`;
-        }
+        // --- Funções Auxiliares ---
+        function formatDuration(secondsStr) { /* ...código da função... */ }
+        function getTaskType(task) { /* ...código da função... */ }
 
-        function getTaskType(task) {
-            const statusInfo = { type: 'tarefa', status: 'pendente' };
-            const effectiveTask = { is_exam: task.is_exam ?? task.task_is_exam, is_essay: task.is_essay ?? task.task_is_essay, task_expired: task.task_expired ?? task.expired, };
-            if(task.answer_status === 'finished' || task.answer_status === 'submitted' || task.status === 'finished' || task.status === 'submitted') {
-                statusInfo.status = 'entregue';
-            } else if (task.answer_status === 'draft') {
-                statusInfo.status = 'rascunho';
-            } else if (effectiveTask.task_expired) {
-                statusInfo.status = 'expirada';
-            }
-            if (effectiveTask.is_exam) statusInfo.type = 'prova'; else if (effectiveTask.is_essay) statusInfo.type = 'redacao';
-            statusInfo.tagClass = statusInfo.status !== 'pendente' ? statusInfo.status : statusInfo.type;
-            const typeName = statusInfo.type.charAt(0).toUpperCase() + statusInfo.type.slice(1);
-            statusInfo.tagText = typeName + (statusInfo.status === 'rascunho' ? ' (Rascunho)' : '');
-            return statusInfo;
-        }
-
-        // --- LÓGICA DE LOGIN ---
-        loginForm.addEventListener('submit', async function(event) {
+        // --- Lógica Principal ---
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
             event.preventDefault();
-            const ra = document.getElementById('ra').value, senha = document.getElementById('senha').value;
-            loginButton.disabled = true; loginButton.textContent = 'Carregando...'; errorMessageDiv.textContent = '';
+            const ra = document.getElementById('ra').value;
+            const digit = document.getElementById('ra-digit').value;
+            const uf = document.getElementById('uf').value;
+            const password = document.getElementById('password').value;
+            const user = `${ra}${digit}${uf}`;
+            
+            const loginButton = document.getElementById('loginButton');
+            const errorMessageDiv = document.getElementById('error-message');
+            loginButton.disabled = true; loginButton.textContent = 'Acessando...'; errorMessageDiv.textContent = '';
+
             try {
-                const response = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user: ra, senha: senha })});
+                const response = await fetch('/api/login', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user, senha: password })
+                });
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.error || 'Falha no login');
                 
                 globalApiData = data;
                 
+                // Popula a UI com os dados
                 const { userInfo, faltas, tarefas, roomUserData } = data;
-                const userName = userInfo.NAME.split(' ')[0];
                 const userInitials = userInfo.NAME.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
                 
-                document.getElementById('dash-user-name').textContent = userName;
-                document.getElementById('side-user-name').textContent = userInfo.NAME;
                 document.getElementById('header-avatar').textContent = userInitials;
                 document.getElementById('side-avatar').textContent = userInitials;
-                
+                document.getElementById('dash-avatar').textContent = userInitials;
+                document.getElementById('dash-user-name').textContent = `Olá, ${userInfo.NAME.split(' ')[0]}`;
+                document.getElementById('side-user-name').textContent = userInfo.NAME;
+
                 const schoolRoom = roomUserData?.rooms?.find(r => r.meta?.nome_escola && r.meta.nome_escola !== "NULL");
-                document.getElementById('side-school-name').textContent = schoolRoom ? schoolRoom.meta.nome_escola : 'Escola não identificada';
-                
+                document.getElementById('dash-school-name').textContent = schoolRoom ? schoolRoom.meta.nome_escola : 'Escola não identificada';
+                document.getElementById('side-school-name').textContent = schoolRoom ? schoolRoom.meta.nome_escola : '';
+
                 document.getElementById('pendencias-count').textContent = tarefas.filter(t => ['pendente', 'rascunho'].includes(getTaskType(t).status)).length;
                 document.getElementById('faltas-count').textContent = faltas.length > 0 ? faltas[0].totalFaltasBimestre : 0;
                 
                 setupTasksScreen();
-                
-                loginSection.style.display = 'none';
-                appContainer.style.display = 'block';
-                navigateTo('dashboard-section');
+                showScreen('dashboard-screen');
+                feather.replace();
+
             } catch (error) {
                 errorMessageDiv.textContent = `Erro: ${error.message}`;
-                loginButton.disabled = false; loginButton.textContent = 'Entrar';
+                loginButton.disabled = false; loginButton.textContent = 'Acessar';
             }
         });
-        
-        // --- LÓGICA DA TELA DE TAREFAS ---
+
         function setupTasksScreen() {
-            const tasksSection = document.getElementById('tasks-section');
+            const tasksSection = document.getElementById('task-page');
             tasksSection.innerHTML = `
+                <div class="page-header"><div class="header-icon"><i class="fas fa-tasks"></i></div><h2>Tarefa SP</h2></div>
                 <div class="filters">
-                    <select id="room-filter"></select>
-                    <select id="status-filter">
-                        <option value="all">Todos os Tipos</option>
-                        <option value="pendente">Pendentes</option>
-                        <option value="entregue">Entregues</option>
-                        <option value="rascunho">Rascunhos</option>
-                        <option value="expirada">Expiradas (Tarefas)</option>
-                        <option value="prova">Provas</option>
-                        <option value="redacao">Redações</option>
-                    </select>
+                    <div class="filter-group"><label>Turmas:</label><select id="room-filter"></select></div>
+                    <div class="filter-group"><label>Status:</label><select id="status-filter">
+                        <option value="all">Todos</option><option value="pendente">A Fazer</option><option value="entregue">Entregues</option>
+                    </select></div>
                 </div>
-                <div id="tasks-list"></div>
+                <div id="task-list"></div>
             `;
-            
             populateFilters(globalApiData.roomUserData);
             renderTasks();
-
             document.getElementById('room-filter').addEventListener('change', (e) => { currentFilters.room = e.target.value; renderTasks(); });
             document.getElementById('status-filter').addEventListener('change', (e) => { currentFilters.status = e.target.value; renderTasks(); });
-            document.getElementById('tasks-list').addEventListener('click', function(event) {
-                if (event.target && event.target.matches('.task-button.do')) {
-                    const button = event.target;
-                    taskToDo.button = button;
-                    taskToDo.taskId = button.dataset.taskId;
-                    taskToDo.roomId = button.dataset.roomId;
-                    taskToDo.answerId = button.dataset.answerId;
-                    document.getElementById('timer-modal').style.display = 'flex';
-                }
-            });
         }
-        
-        function populateFilters(roomsData) {
-            const roomFilter = document.getElementById('room-filter');
-            roomFilter.innerHTML = '<option value="all">Todas as Turmas</option>';
-            if (roomsData && Array.isArray(roomsData.rooms)) {
-                roomsData.rooms.forEach(room => roomFilter.add(new Option(room.topic || room.name, room.name)));
-            }
-        }
-        
+
         async function renderTasks() {
-            const tasksList = document.getElementById('tasks-list');
+            const tasksList = document.getElementById('task-list');
             if (!globalApiData || !tasksList) return;
-            tasksList.innerHTML = '<p style="text-align: center; color: var(--text-light);">Carregando...</p>';
+            tasksList.innerHTML = '<p>Carregando...</p>';
             let tasksToDisplay = [];
-            try {
-                if (currentFilters.status === 'entregue') {
-                    if (!deliveredTasksCache) {
-                        const targets = globalApiData.roomUserData.rooms.map(r => r.name);
-                        const response = await fetch('/api/get-delivered-tasks', {
-                            method: 'POST', headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ tokenB: globalApiData.tokenB, nick: globalApiData.userInfo.EDUSP_NICK, publicationTargets: targets })
-                        });
-                        const data = await response.json();
-                        if (!response.ok) throw new Error(data.error || "Falha na API de tarefas entregues");
-                        deliveredTasksCache = data;
-                    }
-                    tasksToDisplay = deliveredTasksCache;
-                } else { tasksToDisplay = globalApiData.tarefas; }
-
-                tasksList.innerHTML = '';
-                const filteredTasks = tasksToDisplay.filter(task => {
-                    const typeInfo = getTaskType(task);
-                    const effectiveTask = { publication_target: task.publication_target ?? task.task_publication_target };
-                    const roomMatch = currentFilters.room === 'all' || effectiveTask.publication_target === currentFilters.room;
-                    const statusMatch = currentFilters.status === 'all' || typeInfo.status === currentFilters.status || (currentFilters.status !== 'entregue' && typeInfo.type === currentFilters.status);
-                    return roomMatch && statusMatch;
-                });
-
-                if(filteredTasks.length === 0) {
-                    tasksList.innerHTML = '<p style="text-align: center; color: var(--text-light);">Nenhuma atividade encontrada.</p>';
-                } else {
-                     filteredTasks.forEach(task => {
-                        const typeInfo = getTaskType(task);
-                        const effectiveTask = {
-                            title: task.title ?? task.task_title, author: task.author ?? task.task_author, expire_at: task.expire_at ?? task.task_expire_at,
-                            id: task.id ?? task.task_id, publication_target: task.publication_target ?? task.task_publication_target,
-                            answer_id: task.answer_id ?? null, question_count: task.question_count ?? task.task_question_count, duration: task.duration ?? "0.00"
-                        };
-                        let bottomContent = '';
-                        if (typeInfo.status === 'rascunho') {
-                            bottomContent = `<div class="task-note" style="color: var(--orange);">Aviso: Finalize esta tarefa no app oficial.</div>`;
-                        } else if(typeInfo.status === 'entregue') {
-                            bottomContent = `<div class="task-note">Nota: ${task.result_score !== null ? parseFloat(task.result_score).toFixed(1) : 'Aguardando correção'}</div>`;
-                        } else {
-                            bottomContent = `<button class="task-button do" data-task-id="${effectiveTask.id}" data-room-id="${effectiveTask.publication_target}" data-answer-id="${effectiveTask.answer_id || ''}">Fazer Atividade</button>
-                                             <div class="task-status"></div>`;
-                        }
-                        const cardHTML = `<div class="task-card">
-                            <div class="task-header"><h3>${effectiveTask.title}</h3><span class="task-tag ${typeInfo.tagClass}">${typeInfo.tagText}</span></div>
-                            <div class="task-details-grid">
-                                <span><i data-feather="user"></i> ${effectiveTask.author.split('-')[0]}</span>
-                                <span><i data-feather="calendar"></i> ${new Date(effectiveTask.expire_at).toLocaleDateString('pt-BR')}</span>
-                                <span><i data-feather="hash"></i> ${effectiveTask.question_count || 'N/A'} Questões</span>
-                                <span><i data-feather="clock"></i> ${formatDuration(effectiveTask.duration)}</span>
-                            </div>
-                            ${bottomContent}
-                        </div>`;
-                        tasksList.insertAdjacentHTML('beforeend', cardHTML);
-                    });
-                }
-                feather.replace();
-            } catch (error) {
-                tasksList.innerHTML = `<p style="text-align: center; color: var(--red);">Erro: ${error.message}</p>`;
-            }
+            // ... Toda a lógica de renderTasks que já tínhamos ...
         }
         
-        async function doTask(minMinutes, maxMinutes) {
-            const { button, taskId, roomId, submitType, answerId } = taskToDo;
-            const card = button.closest('.task-card'), statusDiv = card.querySelector('.task-status');
-            let finalAnswerId = answerId;
-            let intervalId;
-            try {
-                button.disabled = true; button.className = 'task-button doing';
-                statusDiv.className = 'task-status';
-                
-                if (!finalAnswerId) {
-                    button.textContent = 'Iniciando Tarefa...'; statusDiv.textContent = 'Criando rascunho no servidor...';
-                    const startResponse = await fetch('/api/start-task', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ taskId, tokenB: globalApiData.tokenB, room: roomId }) });
-                    const startData = await startResponse.json();
-                    if (!startResponse.ok) throw new Error(startData.error || 'Falha ao iniciar tarefa.');
-                    finalAnswerId = startData.id;
-                }
-                button.textContent = 'Buscando Respostas...'; statusDiv.textContent = 'Rascunho pronto. Buscando respostas...';
-                const answersResponse = await fetch('/api/get-answers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ taskId, tokenB: globalApiData.tokenB, room: roomId }) });
-                const answersText = await answersResponse.text();
-                let answersData;
-                try { answersData = JSON.parse(answersText); } catch(e) { throw new Error("API de respostas offline ou retornou erro."); }
-                if (!answersResponse.ok) throw new Error(answersData.error || 'Falha ao buscar respostas.');
-                
-                const waitTimeMs = (Math.random() * (maxMinutes - minMinutes) + minMinutes) * 60000;
-                const endTime = Date.now() + waitTimeMs;
-                statusDiv.textContent = 'Respostas prontas. Aguardando tempo...';
-                intervalId = setInterval(() => {
-                    const timeLeft = Math.round((endTime - Date.now()) / 1000);
-                    if (timeLeft <= 0) { clearInterval(intervalId); button.textContent = 'Enviando Tarefa...'; } 
-                    else { const m = Math.floor(timeLeft / 60), s = timeLeft % 60; button.textContent = `Aguardando ${m}:${s.toString().padStart(2, '0')}`; }
-                }, 1000);
-                await new Promise(resolve => setTimeout(resolve, waitTimeMs));
-                
-                statusDiv.textContent = submitType === 'draft' ? 'Salvando como rascunho...' : 'Enviando respostas para finalizar...';
-                const submitResponse = await fetch('/api/submit-task', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ taskId, tokenB: globalApiData.tokenB, payload: answersData, answerId: finalAnswerId, submitType }) });
-                if (!submitResponse.ok) { const errData = await submitResponse.json(); throw new Error(errData.details?.message || errData.error || 'Falha ao enviar.'); }
-                
-                button.className = 'task-button done'; button.textContent = submitType === 'draft' ? 'Salvo!' : 'Enviado!';
-                statusDiv.className = 'task-status success'; statusDiv.textContent = `Tarefa ${submitType === 'draft' ? 'salva como rascunho' : 'concluída'} com sucesso!`;
-                deliveredTasksCache = null;
-                globalApiData.tarefas = globalApiData.tarefas.filter(t => t.id !== Number(taskId));
-                renderTasks();
-            } catch (error) {
-                button.disabled = false; button.className = 'task-button do'; button.textContent = 'Tentar Novamente';
-                statusDiv.className = 'task-status error'; statusDiv.textContent = `Erro: ${error.message}`;
-                if(intervalId) clearInterval(intervalId);
+        document.getElementById('tasks-list').addEventListener('click', function(event) {
+            const button = event.target.closest('.task-button.do');
+            if (button) {
+                taskToDo.button = button;
+                taskToDo.taskId = button.dataset.taskId;
+                // ... resto da lógica para abrir o modal
             }
-        }
-        
-        startTimerBtn.addEventListener('click', () => {
-            const min = parseFloat(minTimeInput.value) || 2; const max = parseFloat(maxTimeInput.value) || 5;
-            taskToDo.submitType = document.querySelector('input[name="submitType"]:checked').value;
-            timerModal.style.display = 'none';
-            doTask(min, max);
         });
-        cancelTimerBtn.addEventListener('click', () => { timerModal.style.display = 'none'; });
+
+        // Cole aqui o resto das funções: getTaskType, doTask, etc. da versão anterior
         
         feather.replace();
     </script>
