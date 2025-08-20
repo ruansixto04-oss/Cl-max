@@ -3,230 +3,344 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teste de API - Login</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Eclipsse</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --background: #f0f2f5;
-            --card-bg: #ffffff;
-            --text-color: #333;
-            --primary-color: #4a148c; /* Cor roxa do 'Eclipsse' */
-            --border-color: #ddd;
-            --error-color: #d32f2f;
-            --success-color: #388e3c;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--background);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 800px;
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            text-align: center;
-            color: var(--primary-color);
-            margin-top: 0;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            box-sizing: border-box;
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s;
-        }
-        
-        .submit-btn:hover {
-            background-color: #5a249c;
-        }
-
-        .submit-btn:active {
-            transform: scale(0.99);
-        }
-        
-        .submit-btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-
-        .response-container {
-            margin-top: 30px;
-            position: relative;
-        }
-
-        h2 {
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-        
-        pre {
-            background-color: #2d2d2d;
-            color: #f8f8f2;
-            padding: 20px;
-            border-radius: 8px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            max-height: 500px;
-            overflow-y: auto;
-            font-size: 0.9rem;
-        }
-        
-        .status-message.error {
-            color: var(--error-color);
-        }
-
-        .copy-btn {
-            position: absolute;
-            top: 75px;
-            right: 15px;
-            background-color: #666;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.3s;
-        }
-
-        .copy-btn:hover {
-            background-color: #777;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
 
-    <div class="container">
-        <h1>Interface de Teste da API</h1>
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="user">Usuário (RA+Dígito+UF tudo junto)</label>
-                <input type="text" id="user" name="user" placeholder="Ex: 0001234567890sp" required>
+    <div id="login-screen" class="screen active">
+        <div class="login-container">
+            <div class="logo-container">
+                <span class="logo-icon-eclipse">🌘</span>
+                <h1>Eclipsse</h1>
             </div>
-            <div class="form-group">
-                <label for="senha">Senha</label>
-                <input type="password" id="senha" name="senha" placeholder="Sua senha da SED" required>
+            <h2>Olá, novamente!</h2>
+            <p>Escolha abaixo um perfil para acessar.</p>
+            <div class="profile-selection">
+                <a href="#" class="profile-option" onclick="showScreen('student-login-screen')">
+                    <span>Sou <strong>Estudante</strong></span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
-            <button type="submit" id="submitButton" class="submit-btn">Consultar API</button>
-        </form>
-
-        <div id="responseWrapper" class="response-container" style="display: none;">
-            <h2>Resposta do Servidor</h2>
-            <pre id="responseArea"></pre>
-            <button id="copyButton" class="copy-btn">Copiar</button>
         </div>
     </div>
 
-    <script>
+    <div id="student-login-screen" class="screen">
+        <div class="login-container">
+            <div class="logo-container">
+                <span class="logo-icon-eclipse">🌘</span>
+                <h1>Eclipsse</h1>
+            </div>
+            <h3>Estudante</h3>
+            <p>Preencha seus dados para acessar o sistema.</p>
+            <form id="loginForm">
+                <div class="input-group">
+                    <div class="ra-container">
+                        <div class="ra-input">
+                            <label for="ra">RA</label>
+                            <input type="text" id="ra" required placeholder="Ex: 000113893360">
+                        </div>
+                        <div class="ra-digit-input">
+                            <label for="ra-digit">Dígito</label>
+                            <input type="text" id="ra-digit" maxlength="1" required placeholder="Ex: 0">
+                        </div>
+                         <div class="uf-select">
+                            <label for="uf">UF</label>
+                            <select id="uf" required>
+                                <option>sp</option>
+                                <option>rj</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" required placeholder="Sua senha da SED">
+                </div>
+                <div id="login-error" class="error-message"></div>
+                <div class="button-group">
+                    <button type="button" class="secondary" onclick="showScreen('login-screen')">Voltar</button>
+                    <button type="submit" id="submitButton" class="primary">Acessar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="dashboard-screen" class="screen">
+        <header>
+            <div class="header-left">
+                <button class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+                 <div class="logo-dashboard">
+                    <span class="logo-icon-eclipse-sm">🌘</span>
+                    <span id="header-title">Eclipsse</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge">4</span>
+                <div id="userInitials" class="user-initials">--</div>
+            </div>
+        </header>
+
+        <div class="sidebar">
+             <a href="#" class="menu-item active" onclick="showPage('home-page', 'Eclipsse', this)"><i class="fas fa-home"></i> Home</a>
+            <a href="#" class="menu-item" onclick="showPage('task-page', 'Tarefa SP', this)"><i class="fas fa-tasks"></i> Tarefa SP</a>
+        </div>
+        <div class="overlay" onclick="toggleMenu()"></div>
+
+        <main class="content">
+            <div id="home-page" class="page active">
+                <div class="welcome-banner">
+                    <div id="userInitialsLarge" class="user-initials-lg">--</div>
+                    <div class="welcome-text">
+                        <h2 id="studentName">Olá, ...</h2>
+                        <p id="studentClass">Carregando turma...</p>
+                        <p><i class="fas fa-school"></i> <span id="studentSchool">Carregando escola...</span></p>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card" onclick="openModal('pendencias-modal')">
+                        <h3 id="pendingCount">-</h3>
+                        <p>Pendências</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>4</h3>
+                        <p>Mensagens não lidas</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="absencesCount">-</h3>
+                        <p>Faltas</p>
+                        <span>Sua presença é <strong>muito importante.</strong></span>
+                    </div>
+                </div>
+                <div class="learning-platforms card">
+                    <h3>Plataformas de Aprendizagem</h3>
+                    <div id="platformGrid" class="platform-grid"></div>
+                </div>
+            </div>
+            <div id="task-page" class="page">
+                <div class="page-header"><div class="header-icon"><i class="fas fa-tasks"></i></div><h2>Tarefa SP</h2></div>
+                <div id="taskList" class="task-list"></div>
+            </div>
+        </main>
+    </div>
+
+    <div id="pendencias-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('pendencias-modal')">&times;</span>
+            <h3>Suas pendências</h3>
+            <ul id="pendingModalList"></ul>
+            <button onclick="closeModal('pendencias-modal')">Fechar</button>
+        </div>
+    </div>
+    
+</body>
+                        </html>
+    <style>
+    :root {
+        --primary-color: #007bff; --secondary-color: #f0f2f5; --text-color: #333; --light-text-color: #777; --background-color: #fff; --border-color: #ddd; --eclipse-brand-color: #4a148c; --eclipse-icon-color: #ffeb3b; --error-color: #d32f2f;
+    }
+    body { font-family: 'Roboto', sans-serif; margin: 0; background-color: var(--secondary-color); color: var(--text-color); }
+    .screen, .page { display: none; }
+    .screen.active, .page.active { display: block; }
+    .login-container { max-width: 400px; margin: 40px auto; padding: 30px; background-color: var(--background-color); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; }
+    .logo-container { display: flex; align-items: center; justify-content: center; margin-bottom: 20px; color: var(--eclipse-brand-color); }
+    .logo-icon-eclipse { font-size: 48px; margin-right: 10px; color: var(--eclipse-icon-color); }
+    .logo-container h1 { font-size: 2.5rem; font-weight: 700; }
+    .login-container h2, .login-container h3 { margin-bottom: 8px; }
+    .login-container p { color: var(--light-text-color); margin-bottom: 25px; }
+    .profile-selection .profile-option { display: flex; justify-content: space-between; align-items: center; padding: 18px; border: 1px solid var(--border-color); border-radius: 8px; text-decoration: none; color: var(--text-color); transition: background-color 0.3s; }
+    .profile-option:hover { background-color: #f9f9f9; }
+    form { text-align: left; }
+    .input-group { margin-bottom: 20px; }
+    .ra-container { display: flex; gap: 10px; }
+    .ra-input { flex-grow: 1; }
+    .ra-digit-input { flex-basis: 60px; }
+    .uf-select { flex-basis: 70px; }
+    .input-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; }
+    .input-group input, .input-group select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
+    .button-group { display: flex; gap: 10px; margin-top: 25px; }
+    .button-group button { flex-grow: 1; padding: 14px; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; border: 1px solid transparent; }
+    .button-group .primary { background-color: var(--primary-color); color: white; }
+    .button-group .primary:disabled { background-color: #ccc; cursor: not-allowed; }
+    .button-group .secondary { background-color: var(--secondary-color); color: var(--text-color); border-color: var(--border-color); }
+    .error-message { color: var(--error-color); text-align: center; margin-top: 15px; font-weight: 500; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background-color: var(--background-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+    .header-left, .header-right { display: flex; align-items: center; gap: 15px; }
+    .menu-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+    .logo-dashboard { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--eclipse-brand-color); font-size: 1.2rem;}
+    .logo-icon-eclipse-sm { font-size: 24px; color: var(--eclipse-icon-color); }
+    .header-right i { font-size: 1.4rem; color: var(--light-text-color); }
+    .notification-badge { background-color: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; position: relative; left: -25px; top: -8px; }
+    .user-initials, .user-initials-lg { background-color: var(--eclipse-brand-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;}
+    .user-initials { width: 35px; height: 35px; font-size: 1rem; }
+    .user-initials-lg { width: 60px; height: 60px; font-size: 1.8rem; }
+    .sidebar { position: fixed; left: -280px; top: 0; width: 280px; height: 100%; background-color: var(--background-color); padding-top: 60px; transition: left 0.3s ease; z-index: 102; box-shadow: 2px 0 5px rgba(0,0,0,0.1); }
+    .sidebar.open { left: 0; }
+    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 101; display: none; }
+    .sidebar.open + .overlay { display: block; }
+    .menu-item { display: flex; align-items: center; gap: 15px; padding: 15px 20px; text-decoration: none; color: var(--text-color); font-weight: 500; }
+    .menu-item.active, .menu-item:hover { background-color: #eef7ff; color: var(--primary-color); border-right: 3px solid var(--primary-color); }
+    .content { padding: 80px 15px 20px 15px; }
+    .welcome-banner { display: flex; align-items: center; gap: 15px; background-color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+    .welcome-text h2 { margin: 0 0 5px 0; font-size: 1.4rem; }
+    .welcome-text p { margin: 0; color: var(--light-text-color); font-size: 0.9rem; }
+    .welcome-text p i { margin-right: 5px; }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+    .stat-card { background-color: white; padding: 20px; border-radius: 12px; cursor: pointer; }
+    .stat-card:last-child { grid-column: 1 / -1; }
+    .stat-card h3 { margin: 0 0 5px 0; font-size: 2rem; }
+    .stat-card p { margin: 0; color: var(--light-text-color); }
+    .stat-card span { display: block; margin-top: 10px; font-size: 0.85rem; color: #555; }
+    .card { background-color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+    .learning-platforms .platform-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+    .platform-item { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; text-decoration: none; color: var(--text-color); font-size: 0.9rem; height: 100px; transition: background-color 0.3s; }
+    .platform-item:hover { background-color: #f9f9f9; }
+    .platform-item img { height: 24px; margin-bottom: 10px; object-fit: contain; }
+    .page-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+    .header-icon { background: var(--secondary-color); border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; }
+    .header-icon i { color: var(--primary-color); font-size: 1.5rem; }
+    .task-card { background: white; border-radius: 12px; margin-bottom: 15px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .task-header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f9f9f9; font-weight: 500; }
+    .status.to-do { background-color: #ffebee; color: #c62828; padding: 5px 10px; border-radius: 15px; font-size: 0.8rem; }
+    .task-body { padding: 15px; }
+    .task-body h3 { margin: 0; }
+    .task-footer { display: flex; justify-content: space-between; padding: 0 15px 15px; font-size: 0.85rem; color: var(--light-text-color); }
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+    .modal-content { background-color: #fefefe; margin: 40% auto; padding: 20px; border-radius: 12px; width: 90%; max-width: 400px; }
+    .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+    .modal h3 { margin-top: 0; }
+    .modal ul { list-style: none; padding: 0; }
+    .modal li { display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px; cursor: pointer; }
+    .modal li i:first-child { margin-right: 10px; color: var(--primary-color); }
+    .modal button { width: 100%; padding: 12px; background: var(--secondary-color); border: 1px solid var(--border-color); border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
         const loginForm = document.getElementById('loginForm');
         const submitButton = document.getElementById('submitButton');
-        const responseWrapper = document.getElementById('responseWrapper');
-        const responseArea = document.getElementById('responseArea');
-        const copyButton = document.getElementById('copyButton');
+        const loginError = document.getElementById('login-error');
 
         loginForm.addEventListener('submit', async (event) => {
             event.preventDefault();
-
-            // Desabilita o botão e mostra estado de loading
+            
             submitButton.disabled = true;
             submitButton.textContent = 'Carregando...';
-            responseWrapper.style.display = 'block';
-            responseArea.textContent = 'Aguardando resposta do servidor...';
-            responseArea.classList.remove('error');
+            loginError.textContent = '';
 
-
-            const formData = new FormData(loginForm);
-            const user = formData.get('user').toLowerCase(); // Garante que UF seja minúscula
-            const senha = formData.get('senha');
+            const ra = document.getElementById('ra').value;
+            const digit = document.getElementById('ra-digit').value;
+            const uf = document.getElementById('uf').value;
+            const password = document.getElementById('password').value;
+            
+            const user = `${ra}${digit}${uf}`;
 
             try {
                 const response = await fetch('/api/login', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ user, senha }),
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user: user, senha: password }),
                 });
 
                 const data = await response.json();
 
-                // Formata o JSON para exibição bonita
-                const formattedJson = JSON.stringify(data, null, 2);
-                responseArea.textContent = formattedJson;
-
                 if (!response.ok) {
-                    responseArea.classList.add('error');
+                    throw new Error(data.error || 'Erro desconhecido no login.');
                 }
+                
+                // SUCESSO! Preenche a UI e muda de tela
+                populateUI(data);
+                showScreen('dashboard-screen');
 
             } catch (error) {
-                console.error('Erro na requisição:', error);
-                responseArea.classList.add('error');
-                responseArea.textContent = `Ocorreu um erro ao tentar se comunicar com a API:\n\n${error.message}`;
+                loginError.textContent = error.message;
             } finally {
-                // Reabilita o botão
                 submitButton.disabled = false;
-                submitButton.textContent = 'Consultar API';
+                submitButton.textContent = 'Acessar';
             }
         });
+    });
 
-        copyButton.addEventListener('click', () => {
-            const textToCopy = responseArea.textContent;
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                // Feedback visual para o usuário
-                copyButton.textContent = 'Copiado!';
-                setTimeout(() => {
-                    copyButton.textContent = 'Copiar';
-                }, 2000);
-            }).catch(err => {
-                console.error('Falha ao copiar texto: ', err);
-                copyButton.textContent = 'Erro ao copiar';
-                 setTimeout(() => {
-                    copyButton.textContent = 'Copiar';
-                }, 2000);
+    function populateUI(data) {
+        const formatName = (name) => name.toLowerCase().replace(/(?:^|\s)\S/g, a => a.toUpperCase());
+        const getInitials = (name) => {
+            const names = name.split(' ');
+            return `${names[0][0]}${names.length > 1 ? names[names.length - 1][0] : ''}`.toUpperCase();
+        };
+        const formatDate = (dateString) => new Date(dateString).toLocaleDateString('pt-BR');
+        const subjectMap = { 3: 'Arte', 10: 'Matemática', 17: 'Ciências'};
+        const getSubject = (ids) => ids.map(id => subjectMap[id]).find(Boolean) || 'Componente';
+
+        const studentName = formatName(data.userInfo.NAME);
+        const initials = getInitials(studentName);
+        document.getElementById('studentName').textContent = `Olá, ${studentName.split(' ')[0]}`;
+        document.getElementById('userInitials').textContent = initials;
+        document.getElementById('userInitialsLarge').textContent = initials;
+
+        const mainRoom = data.roomUserData.rooms.find(room => room.meta && room.meta.cd_escola);
+        if (mainRoom) {
+            document.getElementById('studentClass').textContent = mainRoom.topic.trim();
+            document.getElementById('studentSchool').textContent = formatName(mainRoom.meta.nome_escola);
+        }
+
+        const pendingTasks = data.tarefas.filter(task => task.answer_status !== 'finished');
+        document.getElementById('pendingCount').textContent = pendingTasks.length;
+        document.getElementById('absencesCount').textContent = data.faltas[0]?.totalFaltasBimestre || 0;
+
+        const platformGrid = document.getElementById('platformGrid');
+        platformGrid.innerHTML = '';
+        if (mainRoom && mainRoom.cards) {
+            mainRoom.cards.forEach(card => {
+                platformGrid.innerHTML += `<a href="#" class="platform-item"><img src="${card.icon}" alt="${card.label}"> ${card.label}</a>`;
             });
+        }
+        
+        const taskList = document.getElementById('taskList');
+        taskList.innerHTML = '';
+        pendingTasks.forEach(task => {
+            taskList.innerHTML += `
+                <div class="task-card">
+                    <div class="task-header">
+                        <span>${getSubject(task.category_ids)}</span><span class="status to-do">A Fazer</span>
+                    </div>
+                    <div class="task-body"><h3>${task.title}</h3></div>
+                    <div class="task-footer">
+                        <span>Publicado: ${formatDate(task.publish_at)}</span>
+                        <span>Entregar até: ${formatDate(task.expire_at)}</span>
+                    </div>
+                </div>`;
         });
-    </script>
 
-</body>
-</html>
+        const pendingModalList = document.getElementById('pendingModalList');
+        pendingModalList.innerHTML = `
+            <li onclick="showPage('task-page', 'Tarefa SP')"><i class="fas fa-tasks"></i> ${pendingTasks.length} tarefas <i class="fas fa-chevron-right"></i></li>
+            <li><i class="fas fa-pencil-alt"></i> 0 redação <i class="fas fa-chevron-right"></i></li>
+            <li><i class="fas fa-file-alt"></i> 0 prova <i class="fas fa-chevron-right"></i></li>`;
+    }
+
+    // --- Funções de Navegação e UI ---
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+    function showPage(pageId, title, element) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        document.getElementById('header-title').textContent = title;
+        if (document.querySelector('.sidebar').classList.contains('open')) { toggleMenu(); }
+        if (element) {
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+        }
+        closeModal('pendencias-modal');
+    }
+    function toggleMenu() {
+        document.querySelector('.sidebar').classList.toggle('open');
+        document.querySelector('.overlay').style.display = document.querySelector('.sidebar').classList.contains('open') ? 'block' : 'none';
+    }
+    function openModal(modalId) { document.getElementById(modalId).style.display = 'block'; }
+    function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+</script>
