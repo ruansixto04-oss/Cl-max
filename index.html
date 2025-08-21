@@ -89,8 +89,8 @@
     </div>
 
 </body>
-</html>
-<style>
+                                                                                     </html>
+                                                                                     <style>
     :root { --primary-color: #007bff; --secondary-color: #f0f2f5; --text-color: #333; --light-text-color: #777; --background-color: #fff; --border-color: #ddd; --eclipse-brand-color: #4a148c; --eclipse-icon-color: #ffeb3b; --error-color: #d32f2f; --success-color: #388e3c; }
     body { font-family: 'Roboto', sans-serif; margin: 0; background-color: var(--secondary-color); }
     .screen, .page { display: none; }
@@ -183,7 +183,6 @@
     let rooms = [];
     let tokenB = '';
 
-    // --- LÓGICA DE CLASSIFICAÇÃO ---
     function classifyItem(item) {
         const classified = { ...item, type: 'Tarefa', status: '' };
         if (item.is_exam) classified.type = 'Prova';
@@ -196,7 +195,6 @@
         return classified;
     }
 
-    // --- LÓGICA DE LOGIN ---
     document.getElementById('loginForm').addEventListener('submit', async (event) => {
         event.preventDefault();
         const btn = document.getElementById('submitButton');
@@ -217,11 +215,14 @@
             
             tokenB = data.tokenB;
             rooms = data.roomUserData?.rooms || [];
-            allItems = data.tarefas.map(classifyItem);
+            // *** AQUI ESTÁ A CORREÇÃO PRINCIPAL ***
+            // Garante que `data.tarefas` seja sempre um array antes de usar o `.map`
+            allItems = (data.tarefas || []).map(classifyItem);
             
             populateUI(data);
             buildAllPages();
             showScreen('dashboard-screen');
+
         } catch (error) {
             err.textContent = error.message;
         } finally {
@@ -230,7 +231,6 @@
         }
     });
 
-    // --- LÓGICA DE TAREFAS (NOVO) ---
     async function openTaskDetail(itemId) {
         const item = allItems.find(i => i.id === itemId);
         if (!item) return;
@@ -238,12 +238,10 @@
         const modalTitle = document.getElementById('task-modal-title');
         const modalBody = document.getElementById('task-modal-body');
         const modalFooter = document.getElementById('task-modal-footer');
-        const statusMsg = document.getElementById('task-modal-status');
         
         modalTitle.textContent = item.title;
         modalBody.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Buscando questões...</p></div>`;
         modalFooter.innerHTML = '';
-        statusMsg.textContent = '';
         openModal('task-detail-modal');
 
         try {
@@ -255,18 +253,19 @@
             const taskData = await res.json();
             if (!res.ok) throw new Error(taskData.error || "Falha ao buscar detalhes da tarefa.");
 
+            // Garante que taskData.questions é um array
+            const questions = Array.isArray(taskData.questions) ? taskData.questions : [];
             let questionsHTML = '';
-            taskData.questions.forEach(q => {
+            questions.forEach(q => {
                 questionsHTML += `<div class="question-block"><p>${q.title}</p><ul>`;
-                q.options.forEach(opt => {
+                (q.options || []).forEach(opt => { // Garante que q.options é um array
                     const isCorrect = taskData.answers[q.id]?.includes(opt.id);
                     questionsHTML += `<li class="${isCorrect ? 'correct-answer' : ''}">${opt.text}</li>`;
                 });
                 questionsHTML += `</ul></div>`;
             });
-            modalBody.innerHTML = questionsHTML;
+            modalBody.innerHTML = questionsHTML.length > 0 ? questionsHTML : '<p>Nenhuma questão encontrada para esta tarefa.</p>';
             
-            // Adiciona botão para enviar
             modalFooter.innerHTML = `
                 <p id="task-modal-status" class="status-message"></p>
                 <button class="primary" onclick='solveAndSubmitTask(${JSON.stringify(taskData)})'>Entregar com Respostas</button>`;
@@ -300,10 +299,9 @@
             statusMsg.className = 'status-message success';
             statusMsg.textContent = 'Tarefa entregue com sucesso!';
             
-            // Atualiza a UI em tempo real
             const originalItem = allItems.find(i => i.id === taskData.id);
             if (originalItem) originalItem.status = 'Entregue';
-            buildAllPages(); // Reconstrói as páginas com o item atualizado
+            buildAllPages();
             setTimeout(() => closeModal('task-detail-modal'), 1500);
 
         } catch (error) {
@@ -312,9 +310,8 @@
             submitBtn.disabled = false;
         }
     }
-
-
-    // --- FUNÇÕES DE RENDERIZAÇÃO DA UI ---
+    
+    // Funções de Renderização e UI
     function populateUI(data) {
         const formatName = (name) => name.toLowerCase().replace(/(?:^|\s)\S/g, a => a.toUpperCase());
         const getInitials = (name) => {
@@ -323,19 +320,17 @@
         };
         const studentName = formatName(data.userInfo.NAME);
         document.getElementById('studentName').textContent = `Olá, ${studentName.split(' ')[0]}`;
-        document.getElementById('userInitials').textContent = getInitials(studentName);
-        document.getElementById('userInitialsLarge').textContent = getInitials(studentName);
-
+        const initials = getInitials(studentName);
+        document.getElementById('userInitials').textContent = initials;
+        document.getElementById('userInitialsLarge').textContent = initials;
         const mainRoom = rooms.find(r => r.meta?.cd_escola);
         if (mainRoom) {
             document.getElementById('studentClass').textContent = mainRoom.topic.trim();
             document.getElementById('studentSchool').textContent = formatName(mainRoom.meta.nome_escola);
         }
         document.getElementById('absencesCount').textContent = data.faltas[0]?.totalFaltasBimestre || 0;
-        
         const pending = allItems.filter(i => ['Pendente', 'Rascunho'].includes(i.status));
         document.getElementById('pendingCount').textContent = pending.length;
-        
         document.getElementById('pendingModalList').innerHTML = `
             <li onclick="showPage('task-page', 'Tarefa SP')"><i class="fas fa-tasks"></i> ${pending.filter(i=>i.type==='Tarefa').length} tarefas</li>
             <li onclick="showPage('writing-page', 'Redação Paulista')"><i class="fas fa-pencil-alt"></i> ${pending.filter(i=>i.type==='Redação').length} redações</li>
@@ -349,62 +344,32 @@
     }
 
     function buildPage(type, pageId, title, icon) {
-        document.getElementById(pageId).innerHTML = `
-            <div class="page-header"><div class="header-icon"><i class="fas ${icon}"></i></div><h2>${title}</h2></div>
-            <div class="filters"><div class="filter-group"><label>Status</label>
-                <select id="filter-status-${pageId}">
-                    <option value="A Fazer">A Fazer</option>
-                    <option value="Entregue">Entregues</option>
-                    <option value="Expirado">Expiradas</option>
-                </select></div></div><div class="items-list"></div>`;
+        document.getElementById(pageId).innerHTML = `<div class="page-header"><div class="header-icon"><i class="fas ${icon}"></i></div><h2>${title}</h2></div><div class="filters"><div class="filter-group"><label>Status</label><select id="filter-status-${pageId}"><option value="A Fazer">A Fazer</option><option value="Entregue">Entregues</option><option value="Expirado">Expiradas</option></select></div></div><div class="items-list"></div>`;
         renderItems(pageId, type);
         document.getElementById(`filter-status-${pageId}`).addEventListener('change', () => renderItems(pageId, type));
     }
     
     function renderItems(pageId, type) {
         const statusFilter = document.getElementById(`filter-status-${pageId}`).value;
-        const items = statusFilter === 'A Fazer'
+        const itemsToShow = statusFilter === 'A Fazer'
             ? allItems.filter(i => i.type === type && ['Pendente', 'Rascunho'].includes(i.status))
             : allItems.filter(i => i.type === type && i.status === statusFilter);
-        
         const list = document.querySelector(`#${pageId} .items-list`);
-        if (items.length === 0) {
+        if (itemsToShow.length === 0) {
             list.innerHTML = `<div class="empty-state"><i class="fas fa-folder-open"></i><p>Nenhum item encontrado.</p></div>`;
             return;
         }
-        list.innerHTML = items.map(item => {
-            const room = rooms.find(r => r.name === item.publication_target || r.topic.trim() === item.publication_target);
+        list.innerHTML = itemsToShow.map(item => {
+            const room = rooms.find(r => [r.name, r.topic.trim()].includes(item.publication_target));
             const turma = room ? room.topic.trim() : 'Turma';
             const date = item.expire_at ? new Date(item.expire_at).toLocaleDateString('pt-BR') : 'N/A';
             const isClickable = ['Pendente', 'Rascunho'].includes(item.status);
-
-            return `
-            <div class="item-card ${isClickable ? 'clickable' : ''}" ${isClickable ? `onclick="openTaskDetail(${item.id})"` : ''}>
-                <div class="item-header">
-                    <span class="turma-tag">${turma}</span>
-                    <span class="status-tag status-${item.status}">${item.status}</span>
-                </div>
-                <div class="item-body">
-                    <h3>${item.title || item.task_title}</h3>
-                    <div class="item-footer">
-                        <span><i class="fas fa-question-circle"></i> ${item.question_count || 1} questões</span>
-                        <span><i class="fas fa-calendar-times"></i> Expira em: ${date}</span>
-                    </div>
-                </div>
-            </div>`;
+            return `<div class="item-card ${isClickable ? 'clickable' : ''}" ${isClickable ? `onclick="openTaskDetail(${item.id})"` : ''}><div class="item-header"><span class="turma-tag">${turma}</span><span class="status-tag status-${item.status}">${item.status}</span></div><div class="item-body"><h3>${item.title || item.task_title}</h3><div class="item-footer"><span><i class="fas fa-question-circle"></i> ${item.question_count || 1} questões</span><span><i class="fas fa-calendar-times"></i> Expira em: ${date}</span></div></div></div>`;
         }).join('');
     }
     
-    // Funções de Navegação
     function showScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-    function showPage(id, title, el) {
-        document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        document.getElementById('header-title').textContent = title;
-        if(document.querySelector('.sidebar.open')) toggleMenu();
-        if(el) { document.querySelectorAll('.menu-item').forEach(i=>i.classList.remove('active')); el.classList.add('active'); }
-        closeModal('pendencias-modal');
-    }
+    function showPage(id, title, el) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.getElementById('header-title').textContent = title; if(document.querySelector('.sidebar.open')) toggleMenu(); if(el) { document.querySelectorAll('.menu-item').forEach(i=>i.classList.remove('active')); el.classList.add('active'); } closeModal('pendencias-modal'); }
     function toggleMenu() { const s=document.querySelector('.sidebar'); s.classList.toggle('open'); document.querySelector('.overlay').style.display = s.classList.contains('open') ? 'block' : 'none'; }
     function openModal(id) { document.getElementById(id).style.display='block'; }
     function closeModal(id) { document.getElementById(id).style.display='none'; }
