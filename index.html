@@ -11,39 +11,20 @@
 
     <div id="student-login-screen" class="screen active">
         <div class="login-container">
-            <div class="logo-container">
-                <span class="logo-icon-eclipse">🌘</span>
-                <h1>Eclipsse</h1>
-            </div>
+            <div class="logo-container"><span class="logo-icon-eclipse">🌘</span><h1>Eclipsse</h1></div>
             <h3>Estudante</h3>
             <p>Preencha seus dados para acessar o sistema.</p>
             <form id="loginForm">
                 <div class="input-group">
                     <div class="ra-container">
-                        <div class="ra-input">
-                            <label for="ra">RA</label>
-                            <input type="text" id="ra" required placeholder="Ex: 000113893360">
-                        </div>
-                        <div class="ra-digit-input">
-                            <label for="ra-digit">Dígito</label>
-                            <input type="text" id="ra-digit" maxlength="2" required placeholder="Ex: 0">
-                        </div>
-                        <div class="uf-select">
-                            <label for="uf">UF</label>
-                            <select id="uf" required>
-                                <option value="sp">SP</option>
-                            </select>
-                        </div>
+                        <div class="ra-input"><label for="ra">RA</label><input type="text" id="ra" required placeholder="Ex: 000113893360"></div>
+                        <div class="ra-digit-input"><label for="ra-digit">Dígito</label><input type="text" id="ra-digit" maxlength="2" required placeholder="Ex: 0"></div>
+                        <div class="uf-select"><label for="uf">UF</label><select id="uf" required><option value="sp">SP</option></select></div>
                     </div>
                 </div>
-                <div class="input-group">
-                    <label for="password">Senha</label>
-                    <input type="password" id="password" required placeholder="Sua senha da SED">
-                </div>
+                <div class="input-group"><label for="password">Senha</label><input type="password" id="password" required placeholder="Sua senha da SED"></div>
                 <div id="login-error" class="error-message"></div>
-                <div class="button-group">
-                    <button type="submit" id="submitButton" class="primary">Acessar</button>
-                </div>
+                <div class="button-group"><button type="submit" id="submitButton" class="primary">Acessar</button></div>
             </form>
         </div>
     </div>
@@ -52,14 +33,9 @@
         <header>
             <div class="header-left">
                 <button class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
-                <div class="logo-dashboard">
-                    <span class="logo-icon-eclipse-sm">🌘</span>
-                    <span id="header-title">Eclipsse</span>
-                </div>
+                <div class="logo-dashboard"><span class="logo-icon-eclipse-sm">🌘</span><span id="header-title">Eclipsse</span></div>
             </div>
-            <div class="header-right">
-                <div id="userInitials" class="user-initials">--</div>
-            </div>
+            <div class="header-right"><div id="userInitials" class="user-initials">--</div></div>
         </header>
 
         <div class="sidebar">
@@ -81,17 +57,10 @@
                     </div>
                 </div>
                 <div class="stats-grid">
-                    <div class="stat-card" onclick="openModal('pendencias-modal')">
-                        <h3 id="pendingCount">-</h3>
-                        <p>Pendências</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3 id="absencesCount">-</h3>
-                        <p>Faltas</p>
-                    </div>
+                    <div class="stat-card" onclick="openModal('pendencias-modal')"><h3 id="pendingCount">-</h3><p>Pendências</p></div>
+                    <div class="stat-card"><h3 id="absencesCount">-</h3><p>Faltas</p></div>
                 </div>
             </div>
-
             <div id="task-page" class="page"></div>
             <div id="writing-page" class="page"></div>
             <div id="exams-page" class="page"></div>
@@ -99,31 +68,31 @@
     </div>
 
     <div id="pendencias-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('pendencias-modal')">&times;</span>
+        <div class="modal-content"><span class="close-btn" onclick="closeModal('pendencias-modal')">&times;</span>
             <h3>Suas pendências</h3>
             <ul id="pendingModalList"></ul>
             <button onclick="closeModal('pendencias-modal')">Fechar</button>
         </div>
     </div>
 
+    <div id="task-detail-modal" class="modal">
+        <div class="modal-content large">
+            <span class="close-btn" onclick="closeModal('task-detail-modal')">&times;</span>
+            <h3 id="task-modal-title">Carregando Tarefa...</h3>
+            <div id="task-modal-body">
+                <div class="loader-container"><div class="loader"></div><p>Buscando questões...</p></div>
+            </div>
+            <div id="task-modal-footer" class="modal-footer">
+                <p id="task-modal-status" class="status-message"></p>
+                </div>
+        </div>
+    </div>
+
 </body>
-                    </html>
-    <style>
-    :root { 
-        --primary-color: #007bff; 
-        --secondary-color: #f0f2f5; 
-        --text-color: #333; 
-        --light-text-color: #777; 
-        --background-color: #fff; 
-        --border-color: #ddd; 
-        --eclipse-brand-color: #4a148c; 
-        --eclipse-icon-color: #ffeb3b; 
-        --error-color: #d32f2f; 
-        --orange-color: #f57c00; 
-        --green-color: #388e3c; 
-    }
-    body { font-family: 'Roboto', sans-serif; margin: 0; background-color: var(--secondary-color); color: var(--text-color); }
+</html>
+<style>
+    :root { --primary-color: #007bff; --secondary-color: #f0f2f5; --text-color: #333; --light-text-color: #777; --background-color: #fff; --border-color: #ddd; --eclipse-brand-color: #4a148c; --eclipse-icon-color: #ffeb3b; --error-color: #d32f2f; --success-color: #388e3c; }
+    body { font-family: 'Roboto', sans-serif; margin: 0; background-color: var(--secondary-color); }
     .screen, .page { display: none; }
     .screen.active, .page.active { display: block; }
     .login-container { max-width: 400px; margin: 40px auto; padding: 30px; background-color: var(--background-color); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; }
@@ -171,116 +140,206 @@
     .filters { display: flex; flex-wrap: wrap; gap: 10px; background: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; }
     .filter-group { flex: 1; min-width: 150px; }
     .filter-group label { font-size: 0.8rem; color: var(--light-text-color); }
-    .item-card { background: white; border-radius: 12px; margin-bottom: 15px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .item-card { background: white; border-radius: 12px; margin-bottom: 15px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: transform 0.2s; }
+    .item-card.clickable:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); cursor: pointer; }
     .item-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: #fafafa; border-bottom: 1px solid #eee;}
     .turma-tag { font-size: 0.8rem; font-weight: 500; background-color: #eee; padding: 3px 8px; border-radius: 10px; }
     .status-tag { padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 500; }
     .status-Pendente { background-color: #ffcdd2; color: #c62828; }
     .status-Rascunho { background-color: #fff9c4; color: #f57f17; }
-    .status-Entregue { background-color: #c8e6c9; color: var(--green-color); }
+    .status-Entregue { background-color: #c8e6c9; color: var(--success-color); }
     .status-Expirado { background-color: #e0e0e0; color: #616161; }
     .item-body { padding: 15px; }
     .item-body h3 { margin: 0 0 10px 0; font-size: 1.1rem; }
     .item-footer { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--light-text-color); }
     .empty-state { text-align: center; padding: 40px; background-color: white; border-radius: 12px; }
     .empty-state i { font-size: 3rem; color: #e0e0e0; margin-bottom: 15px; }
+    /* Modal Styles */
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
-    .modal-content { background-color: #fefefe; margin: 40% auto; padding: 20px; border-radius: 12px; width: 90%; max-width: 400px; }
-    .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
-    .modal h3 { margin-top: 0; }
-    .modal ul { list-style: none; padding: 0; }
+    .modal-content { background-color: #fefefe; margin: 20% auto; padding: 0; border-radius: 12px; width: 90%; max-width: 400px; }
+    .modal-content.large { max-width: 700px; margin: 5% auto; }
+    .modal-content h3 { padding: 20px; margin: 0; border-bottom: 1px solid #eee; }
+    .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; padding: 10px 20px; }
+    .modal ul { list-style: none; padding: 20px; }
     .modal li { display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px; cursor: pointer; }
-    .modal button { width: 100%; padding: 12px; background: var(--secondary-color); border: 1px solid var(--border-color); border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+    #task-modal-body { padding: 20px; max-height: 60vh; overflow-y: auto; text-align: left;}
+    .modal-footer { padding: 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background-color: #f9f9f9; }
+    .modal-footer button { padding: 10px 20px; }
+    .question-block { margin-bottom: 20px; border-bottom: 1px solid #f0f0f0; padding-bottom: 15px; }
+    .question-block p { font-weight: 500; }
+    .question-block ul { list-style: none; padding-left: 10px; }
+    .question-block li { padding: 5px; border-radius: 5px; }
+    .correct-answer { background-color: #e8f5e9; border-left: 3px solid var(--success-color); }
+    .loader-container { text-align: center; padding: 40px 0; }
+    .loader { margin: 0 auto 15px auto; border: 4px solid #f3f3f3; border-radius: 50%; border-top: 4px solid var(--primary-color); width: 40px; height: 40px; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .status-message { font-weight: 500; }
+    .status-message.success { color: var(--success-color); }
+    .status-message.error { color: var(--error-color); }
 </style>
 
 <script>
     let allItems = [];
     let rooms = [];
+    let tokenB = '';
 
+    // --- LÓGICA DE CLASSIFICAÇÃO ---
     function classifyItem(item) {
         const classified = { ...item, type: 'Tarefa', status: '' };
         if (item.is_exam) classified.type = 'Prova';
         else if (item.is_essay) classified.type = 'Redação';
         
-        if (item.answer_status === 'finished' || item.status === 'finished') {
-            classified.status = 'Entregue';
-        } else if (item.task_expired) {
-            classified.status = 'Expirado';
-        } else if (item.answer_status === 'draft') {
-            classified.status = 'Rascunho';
-        } else {
-            classified.status = 'Pendente';
-        }
+        if (item.answer_status === 'finished' || item.status === 'finished') classified.status = 'Entregue';
+        else if (item.task_expired) classified.status = 'Expirado';
+        else if (item.answer_status === 'draft') classified.status = 'Rascunho';
+        else classified.status = 'Pendente';
         return classified;
     }
 
+    // --- LÓGICA DE LOGIN ---
     document.getElementById('loginForm').addEventListener('submit', async (event) => {
         event.preventDefault();
-        const submitButton = document.getElementById('submitButton');
-        const loginError = document.getElementById('login-error');
-        
-        submitButton.disabled = true;
-        submitButton.textContent = 'Carregando...';
-        loginError.textContent = '';
-
-        const user = document.getElementById('ra').value + document.getElementById('ra-digit').value + document.getElementById('uf').value;
-        const password = document.getElementById('password').value;
-
+        const btn = document.getElementById('submitButton');
+        const err = document.getElementById('login-error');
+        btn.disabled = true;
+        btn.textContent = 'Carregando...';
+        err.textContent = '';
         try {
-            const response = await fetch('/api/login', {
+            const user = document.getElementById('ra').value + document.getElementById('ra-digit').value + document.getElementById('uf').value;
+            const senha = document.getElementById('password').value;
+            const res = await fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user, senha: password }),
+                body: JSON.stringify({ user, senha }),
             });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error || 'Credenciais inválidas ou erro no servidor.');
-
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Credenciais inválidas.');
+            
+            tokenB = data.tokenB;
             rooms = data.roomUserData?.rooms || [];
             allItems = data.tarefas.map(classifyItem);
             
             populateUI(data);
             buildAllPages();
             showScreen('dashboard-screen');
-
         } catch (error) {
-            loginError.textContent = error.message;
+            err.textContent = error.message;
         } finally {
-            submitButton.disabled = false;
-            submitButton.textContent = 'Acessar';
+            btn.disabled = false;
+            btn.textContent = 'Acessar';
         }
     });
 
+    // --- LÓGICA DE TAREFAS (NOVO) ---
+    async function openTaskDetail(itemId) {
+        const item = allItems.find(i => i.id === itemId);
+        if (!item) return;
+
+        const modalTitle = document.getElementById('task-modal-title');
+        const modalBody = document.getElementById('task-modal-body');
+        const modalFooter = document.getElementById('task-modal-footer');
+        const statusMsg = document.getElementById('task-modal-status');
+        
+        modalTitle.textContent = item.title;
+        modalBody.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Buscando questões...</p></div>`;
+        modalFooter.innerHTML = '';
+        statusMsg.textContent = '';
+        openModal('task-detail-modal');
+
+        try {
+            const res = await fetch('/api/get-answers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ taskId: item.id, tokenB, room: item.publication_target })
+            });
+            const taskData = await res.json();
+            if (!res.ok) throw new Error(taskData.error || "Falha ao buscar detalhes da tarefa.");
+
+            let questionsHTML = '';
+            taskData.questions.forEach(q => {
+                questionsHTML += `<div class="question-block"><p>${q.title}</p><ul>`;
+                q.options.forEach(opt => {
+                    const isCorrect = taskData.answers[q.id]?.includes(opt.id);
+                    questionsHTML += `<li class="${isCorrect ? 'correct-answer' : ''}">${opt.text}</li>`;
+                });
+                questionsHTML += `</ul></div>`;
+            });
+            modalBody.innerHTML = questionsHTML;
+            
+            // Adiciona botão para enviar
+            modalFooter.innerHTML = `
+                <p id="task-modal-status" class="status-message"></p>
+                <button class="primary" onclick='solveAndSubmitTask(${JSON.stringify(taskData)})'>Entregar com Respostas</button>`;
+
+        } catch (error) {
+            modalBody.innerHTML = `<p class="error-message">${error.message}</p>`;
+        }
+    }
+
+    async function solveAndSubmitTask(taskData) {
+        const statusMsg = document.getElementById('task-modal-status');
+        const submitBtn = document.querySelector('#task-modal-footer button');
+        submitBtn.disabled = true;
+        statusMsg.className = 'status-message';
+        statusMsg.textContent = 'Enviando tarefa...';
+
+        const payload = { answers: {} };
+        for (const questionId in taskData.answers) {
+            payload.answers[questionId] = taskData.answers[questionId];
+        }
+
+        try {
+            const res = await fetch('/api/submit-task', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ taskId: taskData.id, tokenB, payload })
+            });
+            const result = await res.json();
+            if (!res.ok) throw new Error(result.error || "Falha ao enviar tarefa.");
+
+            statusMsg.className = 'status-message success';
+            statusMsg.textContent = 'Tarefa entregue com sucesso!';
+            
+            // Atualiza a UI em tempo real
+            const originalItem = allItems.find(i => i.id === taskData.id);
+            if (originalItem) originalItem.status = 'Entregue';
+            buildAllPages(); // Reconstrói as páginas com o item atualizado
+            setTimeout(() => closeModal('task-detail-modal'), 1500);
+
+        } catch (error) {
+            statusMsg.className = 'status-message error';
+            statusMsg.textContent = error.message;
+            submitBtn.disabled = false;
+        }
+    }
+
+
+    // --- FUNÇÕES DE RENDERIZAÇÃO DA UI ---
     function populateUI(data) {
         const formatName = (name) => name.toLowerCase().replace(/(?:^|\s)\S/g, a => a.toUpperCase());
         const getInitials = (name) => {
-            const names = name.split(' ');
-            return `${names[0][0]}${names.length > 1 ? names[names.length - 1][0] : ''}`.toUpperCase();
+            const n = name.split(' ');
+            return `${n[0][0]}${n.length > 1 ? n[n.length-1][0] : ''}`.toUpperCase();
         };
-
         const studentName = formatName(data.userInfo.NAME);
         document.getElementById('studentName').textContent = `Olá, ${studentName.split(' ')[0]}`;
-        const initials = getInitials(studentName);
-        document.getElementById('userInitials').textContent = initials;
-        document.getElementById('userInitialsLarge').textContent = initials;
+        document.getElementById('userInitials').textContent = getInitials(studentName);
+        document.getElementById('userInitialsLarge').textContent = getInitials(studentName);
 
         const mainRoom = rooms.find(r => r.meta?.cd_escola);
         if (mainRoom) {
             document.getElementById('studentClass').textContent = mainRoom.topic.trim();
             document.getElementById('studentSchool').textContent = formatName(mainRoom.meta.nome_escola);
         }
-
         document.getElementById('absencesCount').textContent = data.faltas[0]?.totalFaltasBimestre || 0;
         
-        const pendingTasks = allItems.filter(i => i.type === 'Tarefa' && ['Pendente', 'Rascunho'].includes(i.status));
-        const pendingWritings = allItems.filter(i => i.type === 'Redação' && ['Pendente', 'Rascunho'].includes(i.status));
-        const pendingExams = allItems.filter(i => i.type === 'Prova' && ['Pendente', 'Rascunho'].includes(i.status));
-        
-        document.getElementById('pendingCount').textContent = pendingTasks.length + pendingWritings.length + pendingExams.length;
+        const pending = allItems.filter(i => ['Pendente', 'Rascunho'].includes(i.status));
+        document.getElementById('pendingCount').textContent = pending.length;
         
         document.getElementById('pendingModalList').innerHTML = `
-            <li onclick="showPage('task-page', 'Tarefa SP')"><i class="fas fa-tasks"></i> ${pendingTasks.length} tarefas <i class="fas fa-chevron-right"></i></li>
-            <li onclick="showPage('writing-page', 'Redação Paulista')"><i class="fas fa-pencil-alt"></i> ${pendingWritings.length} redações <i class="fas fa-chevron-right"></i></li>
-            <li onclick="showPage('exams-page', 'Provas')"><i class="fas fa-file-alt"></i> ${pendingExams.length} provas <i class="fas fa-chevron-right"></i></li>`;
+            <li onclick="showPage('task-page', 'Tarefa SP')"><i class="fas fa-tasks"></i> ${pending.filter(i=>i.type==='Tarefa').length} tarefas</li>
+            <li onclick="showPage('writing-page', 'Redação Paulista')"><i class="fas fa-pencil-alt"></i> ${pending.filter(i=>i.type==='Redação').length} redações</li>
+            <li onclick="showPage('exams-page', 'Provas')"><i class="fas fa-file-alt"></i> ${pending.filter(i=>i.type==='Prova').length} provas</li>`;
     }
 
     function buildAllPages() {
@@ -290,85 +349,63 @@
     }
 
     function buildPage(type, pageId, title, icon) {
-        const pageContainer = document.getElementById(pageId);
-        pageContainer.innerHTML = `
-            <div class="page-header">
-                <div class="header-icon"><i class="fas ${icon}"></i></div>
-                <h2>${title}</h2>
-            </div>
-            <div class="filters">
-                <div class="filter-group">
-                    <label>Status</label>
-                    <select id="filter-status-${pageId}">
-                        <option value="A Fazer">A Fazer</option>
-                        <option value="Entregue">Entregues</option>
-                        <option value="Expirado">Expiradas</option>
-                    </select>
-                </div>
-            </div>
-            <div class="items-list"></div>`;
-            
+        document.getElementById(pageId).innerHTML = `
+            <div class="page-header"><div class="header-icon"><i class="fas ${icon}"></i></div><h2>${title}</h2></div>
+            <div class="filters"><div class="filter-group"><label>Status</label>
+                <select id="filter-status-${pageId}">
+                    <option value="A Fazer">A Fazer</option>
+                    <option value="Entregue">Entregues</option>
+                    <option value="Expirado">Expiradas</option>
+                </select></div></div><div class="items-list"></div>`;
         renderItems(pageId, type);
         document.getElementById(`filter-status-${pageId}`).addEventListener('change', () => renderItems(pageId, type));
     }
     
     function renderItems(pageId, type) {
         const statusFilter = document.getElementById(`filter-status-${pageId}`).value;
-        const itemsToShow = statusFilter === 'A Fazer'
+        const items = statusFilter === 'A Fazer'
             ? allItems.filter(i => i.type === type && ['Pendente', 'Rascunho'].includes(i.status))
             : allItems.filter(i => i.type === type && i.status === statusFilter);
         
-        const listContainer = document.querySelector(`#${pageId} .items-list`);
-        listContainer.innerHTML = '';
-        
-        if (itemsToShow.length === 0) {
-            listContainer.innerHTML = `<div class="empty-state"><i class="fas fa-folder-open"></i><p>Nenhum item encontrado.</p></div>`;
+        const list = document.querySelector(`#${pageId} .items-list`);
+        if (items.length === 0) {
+            list.innerHTML = `<div class="empty-state"><i class="fas fa-folder-open"></i><p>Nenhum item encontrado.</p></div>`;
             return;
         }
+        list.innerHTML = items.map(item => {
+            const room = rooms.find(r => r.name === item.publication_target || r.topic.trim() === item.publication_target);
+            const turma = room ? room.topic.trim() : 'Turma';
+            const date = item.expire_at ? new Date(item.expire_at).toLocaleDateString('pt-BR') : 'N/A';
+            const isClickable = ['Pendente', 'Rascunho'].includes(item.status);
 
-        itemsToShow.forEach(item => {
-            const room = rooms.find(r => [r.name, r.topic.trim(), ...(r.group_categories?.map(g => g.id.toString()) || [])].includes(item.publication_target));
-            const turmaName = room ? room.topic.trim() : 'Turma';
-            const expireDate = item.expire_at ? new Date(item.expire_at).toLocaleDateString('pt-BR') : 'N/A';
-            const questionCount = item.question_count > 0 ? `${item.question_count} questões` : '1 entrega';
-
-            listContainer.innerHTML += `
-                <div class="item-card">
-                    <div class="item-header">
-                        <span class="turma-tag">${turmaName}</span>
-                        <span class="status-tag status-${item.status}">${item.status}</span>
+            return `
+            <div class="item-card ${isClickable ? 'clickable' : ''}" ${isClickable ? `onclick="openTaskDetail(${item.id})"` : ''}>
+                <div class="item-header">
+                    <span class="turma-tag">${turma}</span>
+                    <span class="status-tag status-${item.status}">${item.status}</span>
+                </div>
+                <div class="item-body">
+                    <h3>${item.title || item.task_title}</h3>
+                    <div class="item-footer">
+                        <span><i class="fas fa-question-circle"></i> ${item.question_count || 1} questões</span>
+                        <span><i class="fas fa-calendar-times"></i> Expira em: ${date}</span>
                     </div>
-                    <div class="item-body">
-                        <h3>${item.title || item.task_title}</h3>
-                        <div class="item-footer">
-                            <span><i class="fas fa-question-circle"></i> ${questionCount}</span>
-                            <span><i class="fas fa-calendar-times"></i> Expira em: ${expireDate}</span>
-                        </div>
-                    </div>
-                </div>`;
-        });
+                </div>
+            </div>`;
+        }).join('');
     }
     
-    function showScreen(screenId) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(screenId).classList.add('active');
-    }
-    function showPage(pageId, title, element) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
+    // Funções de Navegação
+    function showScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+    function showPage(id, title, el) {
+        document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
         document.getElementById('header-title').textContent = title;
-        if (document.querySelector('.sidebar.open')) { toggleMenu(); }
-        if (element) {
-            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
-            element.classList.add('active');
-        }
+        if(document.querySelector('.sidebar.open')) toggleMenu();
+        if(el) { document.querySelectorAll('.menu-item').forEach(i=>i.classList.remove('active')); el.classList.add('active'); }
         closeModal('pendencias-modal');
     }
-    function toggleMenu() {
-        const sidebar = document.querySelector('.sidebar');
-        sidebar.classList.toggle('open');
-        document.querySelector('.overlay').style.display = sidebar.classList.contains('open') ? 'block' : 'none';
-    }
-    function openModal(modalId) { document.getElementById(modalId).style.display = 'block'; }
-    function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+    function toggleMenu() { const s=document.querySelector('.sidebar'); s.classList.toggle('open'); document.querySelector('.overlay').style.display = s.classList.contains('open') ? 'block' : 'none'; }
+    function openModal(id) { document.getElementById(id).style.display='block'; }
+    function closeModal(id) { document.getElementById(id).style.display='none'; }
 </script>
