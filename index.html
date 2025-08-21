@@ -89,8 +89,8 @@
     </div>
 
 </body>
-                                                                                     </html>
-                                                                                     <style>
+</html>
+<style>
     :root { --primary-color: #007bff; --secondary-color: #f0f2f5; --text-color: #333; --light-text-color: #777; --background-color: #fff; --border-color: #ddd; --eclipse-brand-color: #4a148c; --eclipse-icon-color: #ffeb3b; --error-color: #d32f2f; --success-color: #388e3c; }
     body { font-family: 'Roboto', sans-serif; margin: 0; background-color: var(--secondary-color); }
     .screen, .page { display: none; }
@@ -199,9 +199,7 @@
         event.preventDefault();
         const btn = document.getElementById('submitButton');
         const err = document.getElementById('login-error');
-        btn.disabled = true;
-        btn.textContent = 'Carregando...';
-        err.textContent = '';
+        btn.disabled = true; btn.textContent = 'Carregando...'; err.textContent = '';
         try {
             const user = document.getElementById('ra').value + document.getElementById('ra-digit').value + document.getElementById('uf').value;
             const senha = document.getElementById('password').value;
@@ -215,8 +213,6 @@
             
             tokenB = data.tokenB;
             rooms = data.roomUserData?.rooms || [];
-            // *** AQUI ESTÁ A CORREÇÃO PRINCIPAL ***
-            // Garante que `data.tarefas` seja sempre um array antes de usar o `.map`
             allItems = (data.tarefas || []).map(classifyItem);
             
             populateUI(data);
@@ -226,8 +222,7 @@
         } catch (error) {
             err.textContent = error.message;
         } finally {
-            btn.disabled = false;
-            btn.textContent = 'Acessar';
+            btn.disabled = false; btn.textContent = 'Acessar';
         }
     });
 
@@ -241,7 +236,7 @@
         
         modalTitle.textContent = item.title;
         modalBody.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Buscando questões...</p></div>`;
-        modalFooter.innerHTML = '';
+        modalFooter.innerHTML = `<p id="task-modal-status" class="status-message"></p>`;
         openModal('task-detail-modal');
 
         try {
@@ -253,12 +248,11 @@
             const taskData = await res.json();
             if (!res.ok) throw new Error(taskData.error || "Falha ao buscar detalhes da tarefa.");
 
-            // Garante que taskData.questions é um array
             const questions = Array.isArray(taskData.questions) ? taskData.questions : [];
             let questionsHTML = '';
             questions.forEach(q => {
                 questionsHTML += `<div class="question-block"><p>${q.title}</p><ul>`;
-                (q.options || []).forEach(opt => { // Garante que q.options é um array
+                (q.options || []).forEach(opt => {
                     const isCorrect = taskData.answers[q.id]?.includes(opt.id);
                     questionsHTML += `<li class="${isCorrect ? 'correct-answer' : ''}">${opt.text}</li>`;
                 });
@@ -266,42 +260,47 @@
             });
             modalBody.innerHTML = questionsHTML.length > 0 ? questionsHTML : '<p>Nenhuma questão encontrada para esta tarefa.</p>';
             
-            modalFooter.innerHTML = `
-                <p id="task-modal-status" class="status-message"></p>
-                <button class="primary" onclick='solveAndSubmitTask(${JSON.stringify(taskData)})'>Entregar com Respostas</button>`;
+            // *** CORREÇÃO: Cria o botão dinamicamente e atribui o evento, passando o ID correto ***
+            const submitBtn = document.createElement('button');
+            submitBtn.className = 'primary';
+            submitBtn.textContent = 'Entregar com Respostas';
+            submitBtn.onclick = () => solveAndSubmitTask(item.id, taskData); // Passa o ID original e os dados da tarefa
+            modalFooter.appendChild(submitBtn);
 
         } catch (error) {
             modalBody.innerHTML = `<p class="error-message">${error.message}</p>`;
         }
     }
 
-    async function solveAndSubmitTask(taskData) {
+    async function solveAndSubmitTask(taskId, taskData) { // *** CORREÇÃO: Recebe o taskId explicitamente ***
         const statusMsg = document.getElementById('task-modal-status');
         const submitBtn = document.querySelector('#task-modal-footer button');
         submitBtn.disabled = true;
         statusMsg.className = 'status-message';
         statusMsg.textContent = 'Enviando tarefa...';
 
-        const payload = { answers: {} };
-        for (const questionId in taskData.answers) {
-            payload.answers[questionId] = taskData.answers[questionId];
-        }
+        const payload = { answers: taskData.answers || {} };
 
         try {
             const res = await fetch('/api/submit-task', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ taskId: taskData.id, tokenB, payload })
+                // *** CORREÇÃO: Usa o taskId recebido como parâmetro ***
+                body: JSON.stringify({ taskId: taskId, tokenB: tokenB, payload: payload })
             });
+
             const result = await res.json();
             if (!res.ok) throw new Error(result.error || "Falha ao enviar tarefa.");
 
             statusMsg.className = 'status-message success';
             statusMsg.textContent = 'Tarefa entregue com sucesso!';
             
-            const originalItem = allItems.find(i => i.id === taskData.id);
+            const originalItem = allItems.find(i => i.id === taskId);
             if (originalItem) originalItem.status = 'Entregue';
+            
             buildAllPages();
+            populateUI({ userInfo: { NAME: document.getElementById('studentName').textContent.replace('Olá, ', '') }, faltas: [{ totalFaltasBimestre: document.getElementById('absencesCount').textContent }] }); // Atualiza os contadores
+
             setTimeout(() => closeModal('task-detail-modal'), 1500);
 
         } catch (error) {
@@ -313,22 +312,29 @@
     
     // Funções de Renderização e UI
     function populateUI(data) {
-        const formatName = (name) => name.toLowerCase().replace(/(?:^|\s)\S/g, a => a.toUpperCase());
-        const getInitials = (name) => {
-            const n = name.split(' ');
-            return `${n[0][0]}${n.length > 1 ? n[n.length-1][0] : ''}`.toUpperCase();
-        };
-        const studentName = formatName(data.userInfo.NAME);
-        document.getElementById('studentName').textContent = `Olá, ${studentName.split(' ')[0]}`;
-        const initials = getInitials(studentName);
-        document.getElementById('userInitials').textContent = initials;
-        document.getElementById('userInitialsLarge').textContent = initials;
-        const mainRoom = rooms.find(r => r.meta?.cd_escola);
-        if (mainRoom) {
-            document.getElementById('studentClass').textContent = mainRoom.topic.trim();
-            document.getElementById('studentSchool').textContent = formatName(mainRoom.meta.nome_escola);
+        if (data.userInfo && data.userInfo.NAME) {
+            const formatName = (name) => name.toLowerCase().replace(/(?:^|\s)\S/g, a => a.toUpperCase());
+            const getInitials = (name) => {
+                const n = name.split(' ');
+                return `${n[0][0]}${n.length > 1 ? n[n.length-1][0] : ''}`.toUpperCase();
+            };
+            const studentName = formatName(data.userInfo.NAME);
+            document.getElementById('studentName').textContent = `Olá, ${studentName.split(' ')[0]}`;
+            const initials = getInitials(studentName);
+            document.getElementById('userInitials').textContent = initials;
+            document.getElementById('userInitialsLarge').textContent = initials;
         }
-        document.getElementById('absencesCount').textContent = data.faltas[0]?.totalFaltasBimestre || 0;
+        if (data.roomUserData) {
+            const mainRoom = rooms.find(r => r.meta?.cd_escola);
+            if (mainRoom) {
+                document.getElementById('studentClass').textContent = mainRoom.topic.trim();
+                document.getElementById('studentSchool').textContent = formatName(main.meta.nome_escola);
+            }
+        }
+        if (data.faltas) {
+            document.getElementById('absencesCount').textContent = data.faltas[0]?.totalFaltasBimestre || 0;
+        }
+        
         const pending = allItems.filter(i => ['Pendente', 'Rascunho'].includes(i.status));
         document.getElementById('pendingCount').textContent = pending.length;
         document.getElementById('pendingModalList').innerHTML = `
